@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -47,14 +48,36 @@
     </div>
 
     <div class="container" id="content">
-
+	<?php print_r($_SESSION); ?>
       <!-- Example row of columns -->
       <div class="row">
-        <div class="span4" id="row1">
+        <div class="span4" id="span1">
           <h2>Twitter</h2>
-			<a onclick="ajax('lib/twitter/redirect.php');"><img src="lib/twitter/images/lighter.png" alt="Sign in with Twitter" /></a>
-			<a onclick="ajax('lib/twitter/index.php?call=statuses/home_timeline');"><img src="lib/twitter/images/darker.png" alt="Sign in with Twitter" /></a>
-        </div>
+			<form class="well form-search">
+				<input type="text" id="nTweet" class="input-medium search-query">
+				<button type="button" onclick="post('lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'span1');" class="btn">Tweet!</button>
+			</form>
+			<?php
+				if ( empty($_SESSION['access_token']) || empty($_SESSION['access_token']['oauth_token']) || empty($_SESSION['access_token']['oauth_token_secret']) )
+					echo '<a href="lib/twitter/index.php"><img src="lib/twitter/images/lighter.png" alt="Sign in with Twitter" /></a>';
+				else 
+					echo '<botton class="btn btn-primary" onclick="ajax(\'lib/twitter/index.php?call=statuses/home_timeline\', \'span1\')">Laad Tweets</botton>';
+			?>
+		</div>
+		
+        <div class="span4" id="span2">
+          <h2>Facebook</h2>
+			<form class="well form-search">
+				<input type="text" id="nTweet" class="input-medium search-query">
+				<button type="button" onclick="post('lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'span2');" class="btn">Tweet!</button>
+			</form>
+			<?php
+				if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) )
+					echo '<botton class="btn btn-primary" onclick="ajax(\'lib/facebook/index.php?call=/me/home\', \'span2\')">Laad Posts</botton>';
+				else 
+					echo '<a href="lib/facebook/index.php?action=auth"><img src="lib/twitter/images/lighter.png" alt="Sign in with Twitter" /></a>';		
+			?>
+		</div>
       </div>
 
       <hr>
