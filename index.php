@@ -22,6 +22,7 @@
 	
 	<!-- Le scripts -->
 	<script src="lib/js/jquery.js"></script>
+	<script src="lib/js/ajax.js"></script>
   </head>
 
   <body>
@@ -45,24 +46,14 @@
       </div>
     </div>
 
-    <div class="container">
+    <div class="container" id="content">
 
       <!-- Example row of columns -->
       <div class="row">
-        <div class="span4">
-          <h2>Tweets</h2>
-               <table>
-					<thead>
-						<tr>
-							<th>Tweets</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>5</td>
-						</tr>
-					</tbody>
-				</table>
+        <div class="span4" id="row1">
+          <h2>Twitter</h2>
+			<a onclick="ajax('lib/twitter/redirect.php');"><img src="lib/twitter/images/lighter.png" alt="Sign in with Twitter" /></a>
+			<a onclick="ajax('lib/twitter/index.php?call=statuses/home_timeline');"><img src="lib/twitter/images/darker.png" alt="Sign in with Twitter" /></a>
         </div>
       </div>
 

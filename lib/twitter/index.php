@@ -20,14 +20,30 @@ $access_token = $_SESSION['access_token'];
 $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token['oauth_token'], $access_token['oauth_token_secret']);
 
 /* If method is set change API call made. Test is called by default. */
-$content = $connection->get('account/verify_credentials');
+if ( $_GET['call'] == "statuses/home_timeline" ) {
+	$tweets = $connection->get($_GET['call']);
+	
+	echo "<h2>Twitter</h2>";
+	echo "<table class=\"table\">
+			<thead>
+				<tr>
+					<th>Tweets</th>
+				</tr>
+			</thead><tbody>";
+			
+	foreach ( $tweets as $tweet ) {
+		echo "<tr><td>". $tweet->user->name .":<br />". $tweet->text ."</td></tr>";
+	}
+	
+	echo"</tbody>
+				</table>";
+}
 
 /* Some example calls */
 //$connection->get('users/show', array('screen_name' => 'abraham'));
-//$connection->post('statuses/update', array('status' => date(DATE_RFC822)));
 //$connection->post('statuses/destroy', array('id' => 5437877770));
 //$connection->post('friendships/create', array('id' => 9436992));
 //$connection->post('friendships/destroy', array('id' => 9436992));
 
 /* Include HTML to display on the page */
-include('html.inc');
+//include('html.inc');
