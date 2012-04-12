@@ -27,6 +27,20 @@
   </head>
 
   <body>
+	<script>
+		$(document).ready(function(){
+			<?php 
+			if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) ) {
+				echo "ajax('lib/facebook/index.php?call=/me/home', 'span2');\n";
+				echo "document.getElementById('span2').innerHTML = 'Loading...';\n";
+			}
+			if ( !empty($_SESSION['access_token']) || !empty($_SESSION['access_token']['oauth_token']) || !empty($_SESSION['access_token']['oauth_token_secret']) ) {
+				echo "setTimeout(\"ajax('lib/twitter/index.php?call=statuses/home_timeline', 'span1');\",5000);\n";
+				echo "document.getElementById('span1').innerHTML = 'Loading...';\n";
+			}
+			?>
+		});
+	</script>
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
@@ -48,7 +62,8 @@
     </div>
 
     <div class="container" id="content">
-	<?php print_r($_SESSION); ?>
+	<?php if ( isset($_GET['debug']) ) print_r($_SESSION); ?>
+	<a type="button" href='lib/twitter/clearsessions.php' class="btn">Log uit</a>
       <!-- Example row of columns -->
       <div class="row">
         <div class="span4" id="span1">
@@ -59,7 +74,7 @@
 			</form>
 			<?php
 				if ( empty($_SESSION['access_token']) || empty($_SESSION['access_token']['oauth_token']) || empty($_SESSION['access_token']['oauth_token_secret']) )
-					echo '<a href="lib/twitter/index.php"><img src="lib/twitter/images/lighter.png" alt="Sign in with Twitter" /></a>';
+					echo '<a href="lib/twitter/clearsessions.php"><img src="lib/twitter/images/lighter.png" alt="Sign in with Twitter" /></a>';
 				else 
 					echo '<botton class="btn btn-primary" onclick="ajax(\'lib/twitter/index.php?call=statuses/home_timeline\', \'span1\')">Laad Tweets</botton>';
 			?>
@@ -78,6 +93,7 @@
 					echo '<a href="lib/facebook/index.php?action=auth"><img src="lib/twitter/images/lighter.png" alt="Sign in with Twitter" /></a>';		
 			?>
 		</div>
+	
       </div>
 
       <hr>
