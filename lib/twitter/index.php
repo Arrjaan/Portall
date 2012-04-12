@@ -19,25 +19,38 @@ $access_token = $_SESSION['access_token'];
 /* Create a TwitterOauth object with consumer/user tokens. */
 $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token['oauth_token'], $access_token['oauth_token_secret']);
 
-/* If method is set change API call made. Test is called by default. */
-if ( $_GET['call'] == "statuses/home_timeline" ) {
-	$tweets = $connection->get($_GET['call']);
+if ( $_SERVER['REQUEST_METHOD'] == "GET" ) 
+	$tweets = $connection->get($_REQUEST['call']);
+if ( $_SERVER['REQUEST_METHOD'] == "POST" ) {
+	$args = $_POST;
+	unset($args['call']);
+	$tweets = $connection->post($_REQUEST['call'], $args);
+}
 	
+
+/* If method is set change API call made. Test is called by default. */
+if ( $_REQUEST['call'] == "statuses/home_timeline" ) {	
 	echo "<h2>Twitter</h2>";
-	echo "<table class=\"table\">
+	echo '<table class="table">
 			<thead>
 				<tr>
 					<th>Tweets</th>
 				</tr>
-			</thead><tbody>";
+			</thead><tbody>';
 			
 	foreach ( $tweets as $tweet ) {
-		echo "<tr><td>". $tweet->user->name .":<br />". $tweet->text ."</td></tr>";
+		echo '<tr><td><img src="'. $tweet->user->profile_image_url . '" /></td><td>'. $tweet->user->name .':<br />'. $tweet->text .'</td></tr>';
 	}
 	
 	echo"</tbody>
 				</table>";
 }
+
+if ( !empty($_REQUEST['call'] ) ) {
+	echo $connection->http_code;
+}
+
+if ( !isset($_REQUEST['call']) ) header("Location: /");
 
 /* Some example calls */
 //$connection->get('users/show', array('screen_name' => 'abraham'));
