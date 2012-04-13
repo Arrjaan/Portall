@@ -67,7 +67,7 @@
       <!-- Example row of columns -->
       <div class="row">
         <div class="span4" id="span1">
-          <h2>Twitter</h2>
+          <h2 name="tw">Twitter</h2>
 			<form class="well form-search">
 				<input type="text" id="nTweet" class="input-medium search-query">
 				<button type="button" onclick="post('lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'span1');" class="btn">Tweet!</button>
@@ -81,7 +81,7 @@
 		</div>
 		
         <div class="span4" id="span2">
-          <h2>Facebook</h2>
+          <h2 name="fb">Facebook</h2>
 			<form class="well form-search">
 				<input type="text" id="nTweet" class="input-medium search-query">
 				<button type="button" onclick="post('lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'span2');" class="btn">Tweet!</button>
