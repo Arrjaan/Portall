@@ -1,124 +1,62 @@
-<?php session_start(); ?>
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Portal</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Social Media Reinvented.">
-    <meta name="author" content="Arrjaan">
+<?php
 
-    <!-- Le styles -->
-    <link href="lib/layout/css/bootstrap.css" rel="stylesheet">
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-    </style>
-    <link href="lib/layout/css/bootstrap-responsive.css" rel="stylesheet">
+//error_reporting(E_WARNING);
 
-    <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="lib/layout/ico/favicon.ico">
+require('config.SECURE.inc.php');
+
+session_start();
+if ( isset($_GET['clear']) ) { session_destroy(); session_start(); }
+$db = new Mysqli($db['server'],$db['user'],$db['pass'],$db['db'],$db['port']);
+
+// Restore Login and token sessions.
+if ( !empty($_SESSION['userid']) && !empty($_SESSION['session']) ) {
+	$q = $db->query("select * from `users` where `id` = '".$_SESSION['userid']."' and `session` = '".$_SESSION['session']."'");
 	
-	<!-- Le scripts -->
-	<script src="lib/js/jquery.js"></script>
-	<script src="lib/js/ajax.js"></script>
-  </head>
+	if ( $q->num_rows > 0 ) {
+		$data = $q->fetch_assoc();
+		$_SESSION['access_token'] = 
+		array( 
+			"oauth_token" => $data['tw_token'],
+			"oauth_token_secret" => $data['tw_secret']
+		);
+	}
+	else {
+		unset($_SESSION['userid']);
+		unset($_SESSION['session']);
+	}
+}
 
-  <body>
-	<script>
-		$(document).ready(function(){
-			<?php 
-			if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) ) {
-				echo "ajax('lib/facebook/index.php?call=/me/home', 'span2');\n";
-				echo "document.getElementById('span2').innerHTML = 'Loading...';\n";
-			}
-			if ( !empty($_SESSION['access_token']) || !empty($_SESSION['access_token']['oauth_token']) || !empty($_SESSION['access_token']['oauth_token_secret']) ) {
-				echo "setTimeout(\"ajax('lib/twitter/index.php?call=statuses/home_timeline', 'span1');\",5000);\n";
-				echo "document.getElementById('span1').innerHTML = 'Loading...';\n";
-			}
-			?>
-		});
-	</script>
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="#">Portal</a>
-          <div class="nav-collapse">
-            <ul class="nav">
-              <li class="active"><a href="#tw">Twitter</a></li>
-              <li><a href="#fb">Facebook</a></li>
-              <li><a href="#nw">Add New Service</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
-    </div>
+if ( !empty($_COOKIE['portall_session']) ) {
+	$q = $db->query("select * from `users` where `session` = '".$_COOKIE['portall_session']."'");
 
-    <div class="container" id="content">
-	<?php if ( isset($_GET['debug']) ) print_r($_SESSION); ?>
-	<a type="button" href='lib/twitter/clearsessions.php' class="btn">Log uit</a>
-      <!-- Example row of columns -->
-      <div class="row">
-        <div class="span4" id="span1">
-          <h2>Twitter</h2>
-			<form class="well form-search">
-				<input type="text" id="nTweet" class="input-medium search-query">
-				<button type="button" onclick="post('lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'span1');" class="btn">Tweet!</button>
-			</form>
-			<?php
-				if ( empty($_SESSION['access_token']) || empty($_SESSION['access_token']['oauth_token']) || empty($_SESSION['access_token']['oauth_token_secret']) )
-					echo '<a href="lib/twitter/clearsessions.php"><img src="lib/twitter/images/lighter.png" alt="Sign in with Twitter" /></a>';
-				else 
-					echo '<botton class="btn btn-primary" onclick="ajax(\'lib/twitter/index.php?call=statuses/home_timeline\', \'span1\')">Laad Tweets</botton>';
-			?>
-		</div>
-		
-        <div class="span4" id="span2">
-          <h2>Facebook</h2>
-			<form class="well form-search">
-				<input type="text" id="nTweet" class="input-medium search-query">
-				<button type="button" onclick="post('lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'span2');" class="btn">Tweet!</button>
-			</form>
-			<?php
-				if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) )
-					echo '<botton class="btn btn-primary" onclick="ajax(\'lib/facebook/index.php?call=/me/home\', \'span2\')">Laad Posts</botton>';
-				else 
-					echo '<a href="lib/facebook/index.php?action=auth"><img src="lib/twitter/images/lighter.png" alt="Sign in with Twitter" /></a>';		
-			?>
-		</div>
-	
-      </div>
+	if ( $q->num_rows > 0 ) {
+		$data = $q->fetch_assoc();
+		$_SESSION['access_token'] = 
+		array( 
+			"oauth_token" => $data['tw_token'],
+			"oauth_token_secret" => $data['tw_secret']
+		);
+		$_SESSION['userid'] = $data['id'];
+		$_SESSION['session'] = $_COOKIE['portall_session'];
+		setcookie("portall_session",$_SESSION['session'],time()+60*60*24,'/','portall.eu5.org');
+	}
+	else {
+		setcookie("portall_session", "", time()-3600,'/','portall.eu5.org');
+	}
+}
 
-      <hr>
+@$page = explode("/",$_SERVER['PATH_INFO']);
+if ( empty($page[1]) ) $page[1] = "index";
 
-      <footer>
-        <p>&copy; Company 2012</p>
-      </footer>
+switch ( $page[1] ) {
+	case ( file_exists('lib/php/'.$page[1].'.php') ):
+		require('lib/php/'.$page[1].'.php');
+		break;
+	default:
+		require('lib/php/notfound.php');
+		break;
+}
 
-    </div> <!-- /container -->
+require('lib/php/layout.php');
 
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="lib/layout/js/jquery.js"></script>
-    <script src="lib/layout/js/bootstrap-transition.js"></script>
-    <script src="lib/layout/js/bootstrap-alert.js"></script>
-    <script src="lib/layout/js/bootstrap-modal.js"></script>
-    <script src="lib/layout/js/bootstrap-dropdown.js"></script>
-    <script src="lib/layout/js/bootstrap-scrollspy.js"></script>
-    <script src="lib/layout/js/bootstrap-tab.js"></script>
-    <script src="lib/layout/js/bootstrap-tooltip.js"></script>
-    <script src="lib/layout/js/bootstrap-popover.js"></script>
-    <script src="lib/layout/js/bootstrap-button.js"></script>
-    <script src="lib/layout/js/bootstrap-collapse.js"></script>
-    <script src="lib/layout/js/bootstrap-carousel.js"></script>
-    <script src="lib/layout/js/bootstrap-typeahead.js"></script>
-  </body>
-</html>
+?>

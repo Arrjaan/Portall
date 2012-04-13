@@ -48,6 +48,8 @@ if ( $_REQUEST['call'] == "statuses/home_timeline" ) {
 
 if ( !empty($_REQUEST['call'] ) ) {
 	echo $connection->http_code;
+	$content = $connection->get('account/verify_credentials');
+	print_r($content);
 }
 
 if ( !isset($_REQUEST['call']) ) header("Location: /");
