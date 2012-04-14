@@ -11,7 +11,7 @@ $db = new Mysqli($db['server'],$db['user'],$db['pass'],$db['db'],$db['port']);
 // Restore Login and token sessions.
 if ( !empty($_SESSION['userid']) && !empty($_SESSION['session']) ) {
 	$q = $db->query("select * from `users` where `id` = '".$_SESSION['userid']."' and `session` = '".$_SESSION['session']."'");
-	
+
 	if ( $q->num_rows > 0 ) {
 		$data = $q->fetch_assoc();
 		$_SESSION['access_token'] = 
