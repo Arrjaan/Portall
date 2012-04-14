@@ -14,9 +14,10 @@
 	$user = $facebook->getUser();
 	$_SESSION['facebook'] = $user;
 	
-	if ( $user && empty($_SESSION['userid']) && empty($_SESSION['session']) ) {
+	if ( $user && !isset($_GET['call']) ) {
 		$db = new Mysqli($db['server'],$db['user'],$db['pass'],$db['db'],$db['port']);
 		$q = $db->query("select * from `users` where `facebook` = '".$user."'");
+	
 		if ( $q->num_rows > 0 ) {
 			$data = $q->fetch_assoc();
 			$_SESSION['session'] = substr(sha1(time().$twuser->id),0,10);
@@ -24,14 +25,15 @@
 			$_SESSION['userid'] = $data['id'];
 		}
 		else {
+			$fbid = $_SESSION['facebook']; 
 			$user_profile = $facebook->api('/me','GET');
 			$fullname = $user_profile['name'];
 			$_SESSION['session'] = substr(sha1(time().$twuser->id),0,10);
-			$q = $db->query("insert into `users` values ('0', '".$fullname."', '', '0', '', '', '".$user."', '".$facebook->getAccessToken()."', '".time()."','".$_SESSION['session']."')");
+			$q = $db->query("insert into `users` values ('0', '".$fullname."', '', '0', '', '', '".$fbid."', '".$facebook->getAccessToken()."', '".time()."','".$_SESSION['session']."')");
 			$_SESSION['userid'] = $db->insert_id;
 		}	
 		setcookie("portall_session",$_SESSION['session'],time()+60*60*24,'/','portall.eu5.org');
-		header('Location: /home'); 
+		header('Location: /'); 
 	}
 	
 	if ( !$user ) {

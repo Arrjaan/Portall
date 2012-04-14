@@ -34,7 +34,7 @@
 				echo "ajax('/lib/facebook/index.php?call=/me/home', 'span2');\n";
 				echo "document.getElementById('span2').innerHTML = 'Loading...';\n";
 			}
-			if ( !empty($_SESSION['access_token']) || !empty($_SESSION['access_token']['oauth_token']) || !empty($_SESSION['access_token']['oauth_token_secret']) ) {
+			if ( !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
 				echo "setTimeout(\"ajax('/lib/twitter/index.php?call=statuses/home_timeline', 'span1');\",5000);\n";
 				echo "document.getElementById('span1').innerHTML = 'Loading...';\n";
 			}
@@ -48,6 +48,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
+			<span class="icon-bar"></span>
           </a>
           <a class="brand" href="/">Portal</a>
           <div class="nav-collapse">
@@ -55,6 +56,7 @@
               <li><a href="#tw">Twitter</a></li>
               <li><a href="#fb">Facebook</a></li>
               <li><a href="#nw">Add New Service</a></li>
+			  <li><a href="/lib/twitter/clearsessions.php?logout">Logout</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -70,35 +72,35 @@
         <?php echo $content; ?>
       </div>
 	<?php } else { ?>
-	<a type="button" href='/lib/twitter/clearsessions.php?logout' class="btn">Log uit</a>
+	<form style="text-align: center;" >
+		<div id="postM" class="input-append control-group">
+			<div class="controls">
+				<input onkeyup="count(this.value)" type="text" id="nTweet" class="input-large search-query"/>
+				<button type="button" onclick="post('/lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'postM');" class="btn">Tweet!</button>
+				<span id="postMHelp" class="help-inline">180</span>
+			</div>
+		</div>	
+	</form>
       <!-- Columns -->
       <div class="row">
 		<a name="tw"></a>
         <div class="span4" id="span1">
           <h2>Twitter</h2>
-			<form class="well form-search">
-				<input type="text" id="nTweet" class="input-medium search-query">
-				<button type="button" onclick="post('/lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'span1');" class="btn">Tweet!</button>
-			</form>
 			<?php
-				if ( empty($_SESSION['access_token']) || empty($_SESSION['access_token']['oauth_token']) || empty($_SESSION['access_token']['oauth_token_secret']) )
-					echo '<a href="/lib/twitter/clearsessions.php"><img src="/lib/twitter/images/lighter.png" alt="Sign in with Twitter" /></a>';
-				else 
+				if ( !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) )
 					echo '<botton class="btn btn-primary" onclick="ajax(\'/lib/twitter/index.php?call=statuses/home_timeline\', \'span1\')">Laad Tweets</botton>';
+				else 
+					echo '<a href="/lib/twitter/clearsessions.php"><img src="/lib/layout/img/twitter.png" alt="Sign in with Twitter" /></a>';
 			?>
 		</div>
 		<a name="fb"></a>
         <div class="span4" id="span2">
           <h2>Facebook</h2>
-			<form class="well form-search">
-				<input type="text" id="nTweet" class="input-medium search-query">
-				<button type="button" onclick="post('/lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'span2');" class="btn">Tweet!</button>
-			</form>
 			<?php
 				if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) )
 					echo '<botton class="btn btn-primary" onclick="ajax(\'/lib/facebook/index.php?call=/me/home\', \'span2\')">Laad Posts</botton>';
 				else 
-					echo '<a href="/lib/facebook/index.php?action=auth"><img src="/lib/twitter/images/lighter.png" alt="Sign in with Twitter" /></a>';		
+					echo '<a href="/lib/facebook/index.php?action=auth"><img src="/lib/layout/img/facebook.png" alt="Sign in with Facebook" /></a>';		
 			?>
 		</div>
       </div>
