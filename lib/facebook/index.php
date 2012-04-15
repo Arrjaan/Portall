@@ -46,6 +46,14 @@
 	
 	if ( isset($_GET['code']) ) header("Location: /home");
 	
+	if ( $_SERVER['REQUEST_METHOD'] == "GET" && isset($_GET['call']) ) 
+		$wall = $facebook->api($_GET['call'],'GET');
+	if ( $_SERVER['REQUEST_METHOD'] == "POST" & isset($_POST['call']) ) {
+		$args = $_POST;
+		unset($args['call']);
+		$wall = $facebook->api($_POST['call'],'POST',$args);
+	}
+	
 	if ( $_REQUEST['call'] == "/me/home" ) {	
 		$wall = $facebook->api('/me/home','GET');
         $wall = $wall['data'];

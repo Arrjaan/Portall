@@ -19,16 +19,57 @@ $access_token = $_SESSION['access_token'];
 /* Create a TwitterOauth object with consumer/user tokens. */
 $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token['oauth_token'], $access_token['oauth_token_secret']);
 
-if ( $_SERVER['REQUEST_METHOD'] == "GET" ) 
-	$tweets = $connection->get($_REQUEST['call']);
-if ( $_SERVER['REQUEST_METHOD'] == "POST" ) {
-	$args = $_POST;
-	unset($args['call']);
-	$tweets = $connection->post($_REQUEST['call'], $args);
+if ( $_SERVER['REQUEST_METHOD'] == "GET" && isset($_REQUEST['call']) ) 
+	$tweets = $connection->get($_REQUEST['call'], array("include_entities" => "true"));
+if ( $_SERVER['REQUEST_METHOD'] == "POST" & isset($_REQUEST['call']) ) {	
+	$tweets = $connection->post($_REQUEST['call'], $_POST);
 }
-	
 
-/* If method is set change API call made. Test is called by default. */
+function linkify_tweet($tweet) {
+    $tweet = preg_replace('/(^|\s)@(\w+)/',
+        '\1<a href="#" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name=\2\',\'span3\');">@\2</a>',
+        $tweet);
+    return preg_replace('/(^|\s)#(\w+)/',
+        '\1<a href="http://search.twitter.com/search?q=%23\2">#\2</a>',
+        $tweet);
+}
+
+if ( $_REQUEST['call'] == "statuses/update" ) echo $connection->http_code;
+if ( $_REQUEST['call'] == "users/lookup" ) {	
+	echo "<h2>". $tweets[0]->name ."</h2>";
+	$connection->get("users/profile_image/".$tweets[0]->screen_name, array("size" => "bigger"));
+	$u_tweets = $connection->get("statuses/user_timeline", array("screen_name" => $tweets[0]->screen_name, "count" => "10"));
+	echo '<table class="table"><tbody><tr><td><img src="'. $connection->http_info['redirect_url'] .'" /></td><td></td></tr></table>';
+	
+	echo '<table class="table">
+			<thead>
+				<tr>
+					<th>Tweets</th>
+				</tr>
+			</thead><tbody>';
+			
+	foreach ( $u_tweets as $tweet ) {
+		$twText = linkify_tweet($tweet->text);
+	
+		echo '<tr><td><img src="'. $tweet->user->profile_image_url . '" /></td><td>'. $tweet->user->name .':<br />'. $twText .'<br />';
+		
+		if ( isset($tweet->entities->media[0]->sizes->thumb->w) ) 
+			echo '<img src="'. $tweet->entities->media[0]->media_url . ':thumb" /><br />';
+		
+		echo '<span class="twToolBox">
+			<a onclick="reply(\''. $tweet->user->screen_name .'\',\''. $tweet->id .'\');">&raquo; Reply</a> 
+			<a onclick="post(\'/lib/twitter/index.php?call=statuses/retweet/'. $tweet->id .'\',\'\', \'postM\');">&raquo; Retweet</a>
+		</span>';
+		
+		
+		echo '</td></tr>';
+	}
+	
+	echo"</tbody>
+				</table>";	
+}
+
+/* Loading Tweets. */
 if ( $_REQUEST['call'] == "statuses/home_timeline" ) {	
 	echo "<h2>Twitter</h2>";
 	echo '<table class="table">
@@ -38,16 +79,44 @@ if ( $_REQUEST['call'] == "statuses/home_timeline" ) {
 				</tr>
 			</thead><tbody>';
 			
-	foreach ( $tweets as $tweet ) {
-		echo '<tr><td><img src="'. $tweet->user->profile_image_url . '" /></td><td>'. $tweet->user->name .':<br />'. $tweet->text .'</td></tr>';
+	foreach ( $tweets as $tweet ) {	
+		echo '<tr><td>';
+
+		if ( isset($tweet->retweeted_status) ) {
+			$twText = linkify_tweet($tweet->retweeted_status->text);
+			echo '<img src="'. $tweet->retweeted_status->user->profile_image_url . '" />';
+			echo '</td><td><a class="none" style="color: #999;" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name='. $tweet->retweeted_status->user->screen_name .'\',\'span3\');">'. $tweet->retweeted_status->user->name .'</a> 
+			(retweeted by <a class="none" style="color: #999;" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name='. $tweet->user->screen_name .'\',\'span3\');">'. $tweet->user->name .'</a>)<br />'. $twText .'<br />';
+			$tweetid = $tweet->retweeted_status->id;
+		}
+		else {
+			$twText = linkify_tweet($tweet->text);
+			echo '<img src="'. $tweet->user->profile_image_url . '" />';
+			echo '</td><td><a class="none" style="color: #999;" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name='. $tweet->user->screen_name .'\',\'span3\');">'. $tweet->user->name .'</a>:<br />'. $twText .'<br />';
+			$tweetid = $tweet->id;
+		}
+		
+		if ( isset($tweet->entities->media[0]->sizes->thumb->w) ) 
+			echo '<img src="'. $tweet->entities->media[0]->media_url . ':thumb" /><br />';
+		elseif ( preg_match("/youtube\.com\/watch\?v/",$tweet->entities->urls[0]->expanded_url) ) {
+			$url = explode("=",$tweet->entities->urls[0]->expanded_url);
+			$url = $url[1];
+			echo '<iframe width="150" height="131" src="http://www.youtube.com/embed/'.$url.'" frameborder="0" allowfullscreen></iframe><br />';
+		}
+		
+		echo '<span class="twToolBox">
+			<a onclick="reply(\''. $tweet->user->screen_name .'\',\''. $tweet->id .'\');">&raquo; Reply</a> 
+			<a onclick="post(\'/lib/twitter/index.php?call=statuses/retweet/'. $tweetid .'\',\'\', \'postM\');">&raquo; Retweet</a>
+		</span>';
+		
+		
+		echo '</td></tr>';
 	}
 	
 	echo"</tbody>
 				</table>";
-}
-
-if ( !empty($_REQUEST['call'] ) ) {
-	echo $connection->http_code;
+				
+	print_r($tweets);
 }
 
 if ( !isset($_REQUEST['call']) ) header("Location: /");

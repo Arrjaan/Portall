@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Portal</title>
+    <title>Portall</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Social Media Reinvented.">
     <meta name="author" content="Arrjaan">
@@ -17,6 +17,7 @@
       }
     </style>
     <link href="/lib/layout/css/bootstrap-responsive.css" rel="stylesheet">
+	<link href="/lib/layout/css/sprite.css" rel="stylesheet">
 
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="/lib/layout/ico/favicon.ico">
@@ -28,15 +29,33 @@
 
   <body>
 	<script>
+		function uFacebook() {
+			ajax('/lib/facebook/index.php?call=/me/home', 'span2'); 
+			setTimeout("uFacebook()",60000);
+		}
+		function uTwitter() {
+			ajax('/lib/twitter/index.php?call=statuses/home_timeline', 'span1');
+			setTimeout("uTwitter()",45000);
+		}
 		$(document).ready(function(){
 			<?php 
 			if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) ) {
-				echo "ajax('/lib/facebook/index.php?call=/me/home', 'span2');\n";
-				echo "document.getElementById('span2').innerHTML = 'Loading...';\n";
+			?>
+			uFacebook();
+			document.getElementById('span2').innerHTML = 'Loading...';
+			<?php
 			}
-			if ( !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
-				echo "setTimeout(\"ajax('/lib/twitter/index.php?call=statuses/home_timeline', 'span1');\",5000);\n";
-				echo "document.getElementById('span1').innerHTML = 'Loading...';\n";
+			if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) && !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
+			?>	
+			setTimeout("uTwitter()",5000);
+			document.getElementById('span1').innerHTML = 'Loading...';
+			<?php
+			}
+			if ( !isset($_SESSION['facebook']) && !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
+			?>
+			uTwitter();
+			document.getElementById('span1').innerHTML = 'Loading...';
+			<?php
 			}
 			?>
 		});
@@ -50,12 +69,13 @@
             <span class="icon-bar"></span>
 			<span class="icon-bar"></span>
           </a>
-          <a class="brand" href="/">Portal</a>
+          <a class="brand" href="/">Portall</a>
           <div class="nav-collapse">
             <ul class="nav">
               <li><a href="#tw">Twitter</a></li>
               <li><a href="#fb">Facebook</a></li>
-              <li><a href="#nw">Add New Service</a></li>
+            </ul>
+			<ul class="nav pull-right">
 			  <li><a href="/lib/twitter/clearsessions.php?logout">Logout</a></li>
             </ul>
           </div><!--/.nav-collapse -->
@@ -72,12 +92,12 @@
         <?php echo $content; ?>
       </div>
 	<?php } else { ?>
-	<form style="text-align: center;" >
+	<form onsubmit="post('/lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'postM'); return false;" style="text-align: center;" >
 		<div id="postM" class="input-append control-group">
 			<div class="controls">
-				<input onkeyup="count(this.value)" type="text" id="nTweet" class="input-large search-query"/>
+				<input onfocus="this.value = this.value;" onkeyup="count(this.value)" type="text" id="nTweet" class="input-large search-query"/>
 				<button type="button" onclick="post('/lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'postM');" class="btn">Tweet!</button>
-				<span id="postMHelp" class="help-inline">180</span>
+				<span id="postMHelp" class="help-inline">140</span>
 			</div>
 		</div>	
 	</form>
@@ -102,6 +122,8 @@
 				else 
 					echo '<a href="/lib/facebook/index.php?action=auth"><img src="/lib/layout/img/facebook.png" alt="Sign in with Facebook" /></a>';		
 			?>
+		</div>
+		<div class="span4" id="span3">
 		</div>
       </div>
 		<?php } ?>
