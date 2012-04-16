@@ -35,11 +35,49 @@ function linkify_tweet($tweet) {
 }
 
 if ( $_REQUEST['call'] == "statuses/update" ) echo $connection->http_code;
+if ( $_REQUEST['call'] == "account/verify_credentials" ) {	
+	echo "<h2>". $tweets->name ."</h2>";
+	$u_tweets = $connection->get("statuses/user_timeline", array("screen_name" => $tweets[0]->screen_name, "count" => "10"));
+	$connection->get("users/profile_image/".$tweets->screen_name, array("size" => "bigger"));
+	echo '<table><tbody><tr><td><img src="'. $connection->http_info['redirect_url'] .'" /></td><td>';
+	
+	echo '</td></tr></table>';
+	
+	echo '<table class="table">
+			<thead>
+				<tr>
+					<th>Tweets</th>
+				</tr>
+			</thead><tbody>';
+			
+	foreach ( $u_tweets as $tweet ) {
+		$twText = linkify_tweet($tweet->text);
+	
+		echo '<tr><td><img src="'. $tweet->user->profile_image_url . '" /></td><td>'. $tweet->user->name .':<br />'. $twText .'<br />';
+		
+		if ( isset($tweet->entities->media[0]->sizes->thumb->w) ) 
+			echo '<img src="'. $tweet->entities->media[0]->media_url . ':thumb" /><br />';
+		
+		echo '<span class="twToolBox">
+			<a onclick="reply(\''. $tweet->user->screen_name .'\',\''. $tweet->id .'\');">&raquo; Reply</a> 
+			<a onclick="post(\'/lib/twitter/index.php?call=statuses/retweet/'. $tweet->id .'\',\'\', \'postM\');">&raquo; Retweet</a>
+		</span>';
+		
+		
+		echo '</td></tr>';
+	}
+	
+	echo"</tbody>
+				</table>";	
+}
 if ( $_REQUEST['call'] == "users/lookup" ) {	
 	echo "<h2>". $tweets[0]->name ."</h2>";
-	$connection->get("users/profile_image/".$tweets[0]->screen_name, array("size" => "bigger"));
 	$u_tweets = $connection->get("statuses/user_timeline", array("screen_name" => $tweets[0]->screen_name, "count" => "10"));
-	echo '<table class="table"><tbody><tr><td><img src="'. $connection->http_info['redirect_url'] .'" /></td><td></td></tr></table>';
+	$connection->get("users/profile_image/".$tweets[0]->screen_name, array("size" => "bigger"));
+	echo '<table><tbody><tr><td><img src="'. $connection->http_info['redirect_url'] .'" /></td><td>';
+	
+	
+	echo '</td></tr></table>';
 	
 	echo '<table class="table">
 			<thead>

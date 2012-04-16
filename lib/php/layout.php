@@ -44,21 +44,24 @@
 			setTimeout("uTwitter()",45000);
 		}
 		$(document).ready(function(){
+			document.getElementById('span3').innerHTML = '<h2>User Info</h2>Loading...';
 			<?php 
 			if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) ) {
 			?>
+			ajax('/lib/facebook/index.php?call=/<?php echo $_SESSION['facebook']; ?>', 'span3');
 			uFacebook();
 			document.getElementById('span2').innerHTML = '<h2>Facebook</h2>Loading...';
 			<?php
 			}
-			if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) && !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
+			if ( isset($_SESSION['facebook']) && !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
 			?>	
-			setTimeout("uTwitter()",5000);
+			uTwitter();
 			document.getElementById('span1').innerHTML = '<h2>Twitter</h2>Loading...';
 			<?php
 			}
 			if ( !isset($_SESSION['facebook']) && !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
 			?>
+			ajax('/lib/twitter/index.php?call=account/verify_credentials','span3');
 			uTwitter();
 			document.getElementById('span1').innerHTML = '<h2>Twitter</h2>Loading...';
 			<?php
@@ -99,7 +102,10 @@
     </div>
 
     <div class="container" id="content">
-	<?php if ( $_SESSION['debug'] ) { echo "SESSIONS:<br />"; print_r($_SESSION); echo "<br /><br />COOKIES:<br />"; print_r($_COOKIE); echo "<br /><br />"; } ?>
+	<?php if ( $_SESSION['debug'] ) { echo "SESSIONS:<br />"; print_r($_SESSION); echo "<br /><br />COOKIES:<br />"; print_r($_COOKIE); echo "<br /><br />"; ?>
+	<a onclick="document.getElementById('source').innerHTML = quene.length + ': ' + quene.toSource() + '<br /><br />';">&raquo; View AJAX status</a><br />
+	<span id="source"></span>
+	<?php } ?>
 	<?php if ( $type == "home" ) { ?>
 	<!-- Main hero unit -->
       <div class="hero-unit">
@@ -107,11 +113,11 @@
         <?php echo $content; ?>
       </div>
 	<?php } else { ?>
-	<form onsubmit="post('/lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'postM'); return false;" style="text-align: center;" >
+	<form onsubmit="post('/lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'postM'); document.getElementById('nTweet').value = ''; return false;" style="text-align: center;" >
 		<div id="postM" class="input-append control-group">
 			<div class="controls">
-				<input onfocus="this.value = this.value;" onkeyup="count(this.value)" type="text" id="nTweet" class="input-large search-query"/>
-				<button type="button" onclick="post('/lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'postM');" class="btn">Tweet!</button>
+				<input onkeyup="count(this.value)" type="text" id="nTweet" class="input-large search-query"/>
+				<button type="button" onclick="post('/lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'postM'); document.getElementById('nTweet').value = '';" class="btn">Tweet!</button>
 				<span id="postMHelp" class="help-inline">140</span>
 			</div>
 		</div>	

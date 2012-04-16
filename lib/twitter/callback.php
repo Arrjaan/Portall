@@ -11,6 +11,11 @@ require_once('twitteroauth/twitteroauth.php');
 require_once('config.SECURE.php');
 require_once('../../config.SECURE.inc.php');
 
+if ( isset($_GET['denied']) ) {
+	header("Location: /");
+	die();
+}
+
 /* If the oauth_token is old redirect to the connect page. */
 if (isset($_REQUEST['oauth_token']) && $_SESSION['oauth_token'] !== $_REQUEST['oauth_token']) {
   $_SESSION['oauth_status'] = 'oldtoken';
@@ -43,6 +48,12 @@ if (200 == $connection->http_code) {
 	
 	$twuser = $conn->get('account/verify_credentials');
 	
+	if ( !empty($_SESSION['userid']) && !empty($_SESSION['session']) ) {
+		$q = $db->query("select * from `users` where `session` = '".$_SESSION['session']."' and `id` = '".$_SESSION['userid']."'");
+		$data = $q->fetch_assoc();
+		$db->query("update `users` set `twitter` = '". $twuser->id ."', `tw_token` = '".$access_token['oauth_token']."', `tw_secret` = '".$access_token['oauth_token_secret']."' where `id` = '".$data['id']."'");
+	}	
+	else {
 	$q = $db->query("select * from `users` where `twitter` = '". $twuser->id ."'");
 	if ( $q->num_rows > 0 ) {
 		$data = $q->fetch_assoc();
@@ -56,6 +67,7 @@ if (200 == $connection->http_code) {
 		$_SESSION['userid'] = $db->insert_id;
 	}	
 	setcookie("portall_session",$_SESSION['session'],time()+60*60*24,'/','portall.eu5.org');
+	}
 	header('Location: /home'); 
 } else {
 	/* Save HTTP status for error dialog on connnect page.*/

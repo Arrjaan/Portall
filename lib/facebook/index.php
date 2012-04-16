@@ -46,7 +46,7 @@
 	
 	if ( !$user ) {
 		$params = array(
-			'scope' => 'user_status, friends_status, user_activities, friends_activities, read_stream, user_likes, friends_likes, read_mailbox, read_stream, manage_notifications'
+			'scope' => 'user_status, friends_status, user_activities, friends_activities, read_stream, user_likes, friends_likes, read_mailbox, read_stream, manage_notifications, user_hometown, friends_hometown, user_education_history, friends_education_history, user_birthday, friends_birthday,user_relationships, friends_relationships, user_relationship_details, friends_relationship_details'
 		);
 		$loginUrl = $facebook->getLoginUrl($params);	
 		header("Location: ".$loginUrl);
@@ -88,35 +88,42 @@
 					</table>";
 		if ( $_SESSION['debug'] ) print_r($wall);
 	}
-	if ( preg_match("/[0-9]{1,15}",$_REQUEST['call']) ) {	
-		echo "<h2>". $wall['id'] ."</h2>";
-		echo '<table class="table"><tbody><tr><td><img src="http://graph.facebook.com/'.$wall['id'].'/picture" /></td><td></td></tr></table>';
+	/* User information */
+	if ( preg_match("/[0-9]{10,20}/",$_REQUEST['call']) ) {	
+		$data = json_decode(file_get_contents("https://graph.facebook.com/".$wall['id']."?access_token=".$facebook->getAccessToken()),true);
+		
+		echo "<h2>". $wall['name'] ."</h2>";
+		echo '<table><tbody><tr><td><img src="http://graph.facebook.com/'.$wall['id'].'/picture?type=normal" /></td><td>';
+		
+		echo  '<strong>'.$data['name'].'</strong><br />';
+		if ( !empty($data['birthday']) ) echo 'Birthday: '.$data['birthday'].'<br />';
+		if ( !empty($data['hometown']['name']) ) echo 'Hometown: '.$data['hometown']['name'].'<br />';
+		if ( !empty($data['education']['school']['name']) ) echo 'School: '.$data['education']['school']['name'].'<br />';
+		if ( !empty($data['relationship_status']) ) echo 'Relationship status: '.$data['relationship_status'].'<br />';
+		
+		echo '</td></tr></table>';
 		
 		echo '<table class="table">
 				<thead>
 					<tr>
-						<th>Tweets</th>
+						<th>Posts</th>
 					</tr>
 				</thead><tbody>';
 				
-		foreach ( $u_tweets as $tweet ) {
-			$twText = linkify_tweet($tweet->text);
+		$posts = $facebook->api('/'.$wall['id'].'/feed','GET');
+		$posts = $posts["data"];
 		
-			echo '<tr><td><img src="'. $tweet->user->profile_image_url . '" /></td><td>'. $tweet->user->name .':<br />'. $twText .'<br />';
+		foreach ( $posts as $post ) {
+			if ( empty($post['message']) ) continue;
+			echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td><td><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a>:<br />'. $post['message'].'<br />';
 			
-			if ( isset($tweet->entities->media[0]->sizes->thumb->w) ) 
-				echo '<img src="'. $tweet->entities->media[0]->media_url . ':thumb" /><br />';
-			
-			echo '<span class="twToolBox">
-				<a onclick="reply(\''. $tweet->user->screen_name .'\',\''. $tweet->id .'\');">&raquo; Reply</a> 
-				<a onclick="post(\'/lib/twitter/index.php?call=statuses/retweet/'. $tweet->id .'\',\'\', \'postM\');">&raquo; Retweet</a>
-			</span>';
-			
+			if ( !empty($post['picture']) ) echo '<a href="'.$post['link'].'" target="_BLANK"><img src="/thumb/'.base64_encode($post['picture']).'" /></a><br />';
 			
 			echo '</td></tr>';
 		}
 		
 		echo"</tbody>
 					</table>";	
+		if ( $_SESSION['debug'] ) print_r($data);
 	}
 ?>
