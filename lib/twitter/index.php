@@ -70,13 +70,14 @@ if ( $_REQUEST['call'] == "users/lookup" ) {
 }
 
 /* Loading Tweets. */
-if ( $_REQUEST['call'] == "statuses/home_timeline" ) {	
+if ( $_REQUEST['call'] == "statuses/home_timeline" || $_REQUEST['call'] == "statuses/mentions" ) {	
 	echo "<h2>Twitter</h2>";
 	echo '<table class="table">
 			<thead>
-				<tr>
-					<th>Tweets</th>
-				</tr>
+				<tr>';
+				if ( $_REQUEST['call'] == "statuses/mentions" ) echo '<th>Mentions</th>';
+				if ( $_REQUEST['call'] == "statuses/home_timeline" ) echo '<th>Tweets</th>';
+				echo'</tr>
 			</thead><tbody>';
 			
 	foreach ( $tweets as $tweet ) {	
@@ -116,7 +117,7 @@ if ( $_REQUEST['call'] == "statuses/home_timeline" ) {
 	echo"</tbody>
 				</table>";
 				
-	print_r($tweets);
+	if ( $_SESSION['debug'] ) print_r($tweets);
 }
 
 if ( !isset($_REQUEST['call']) ) header("Location: /");

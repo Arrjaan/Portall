@@ -1,4 +1,4 @@
-<?php session_start(); ?>
+<?php session_start(); if ( isset($_GET['debug']) ) $_SESSION['debug'] = true; if ( isset($_GET['halt']) ) $_SESSION['debug'] = false; if ( !isset($_SESSION['debug']) ) $_SESSION['debug'] = false; ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -30,11 +30,17 @@
   <body>
 	<script>
 		function uFacebook() {
-			ajax('/lib/facebook/index.php?call=/me/home', 'span2'); 
+			<?php 
+			if ( $page[1] == "home" ) echo "ajax('/lib/facebook/index.php?call=/me/home', 'span2');";
+			if ( $page[1] == "notify" ) echo "ajax('/lib/facebook/index.php?call=/me/home', 'span2');";
+			?>
 			setTimeout("uFacebook()",60000);
 		}
 		function uTwitter() {
-			ajax('/lib/twitter/index.php?call=statuses/home_timeline', 'span1');
+			<?php 
+			if ( $page[1] == "home" ) echo "ajax('/lib/twitter/index.php?call=statuses/home_timeline', 'span1');";
+			if ( $page[1] == "notify" ) echo "ajax('/lib/twitter/index.php?call=statuses/mentions', 'span1');";
+			?>
 			setTimeout("uTwitter()",45000);
 		}
 		$(document).ready(function(){
@@ -42,19 +48,19 @@
 			if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) ) {
 			?>
 			uFacebook();
-			document.getElementById('span2').innerHTML = 'Loading...';
+			document.getElementById('span2').innerHTML = '<h2>Facebook</h2>Loading...';
 			<?php
 			}
 			if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) && !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
 			?>	
 			setTimeout("uTwitter()",5000);
-			document.getElementById('span1').innerHTML = 'Loading...';
+			document.getElementById('span1').innerHTML = '<h2>Twitter</h2>Loading...';
 			<?php
 			}
 			if ( !isset($_SESSION['facebook']) && !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
 			?>
 			uTwitter();
-			document.getElementById('span1').innerHTML = 'Loading...';
+			document.getElementById('span1').innerHTML = '<h2>Twitter</h2>Loading...';
 			<?php
 			}
 			?>
@@ -72,11 +78,20 @@
           <a class="brand" href="/">Portall</a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li><a href="#tw">Twitter</a></li>
-              <li><a href="#fb">Facebook</a></li>
+				<li><a href="/home">Home</a></li>
+				<li><a href="/notify">Notifications</a></li>
             </ul>
 			<ul class="nav pull-right">
-			  <li><a href="/lib/twitter/clearsessions.php?logout">Logout</a></li>
+				<li class="dropdown" id="menu1">
+					<a class="dropdown-toggle" data-toggle="dropdown" href="#menu1">Debug <b class="caret"></b></a>
+					<ul class="dropdown-menu">
+						<li><a href="?debug">Start Debug</a></li>
+						<li><a href="?halt">Stop Debug</a></li>
+						<li class="divider"></li>
+						<li><a href="?clear">Clear all sessions</a></li>
+					</ul>
+				</li>
+				<li><a href="/lib/twitter/clearsessions.php?logout">Logout</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -84,7 +99,7 @@
     </div>
 
     <div class="container" id="content">
-	<?php if ( isset($_GET['debug']) ) { echo "SESSIONS:<br />"; print_r($_SESSION); echo "<br /><br />COOKIES:<br />"; print_r($_COOKIE); echo "<br /><br />"; } ?>
+	<?php if ( $_SESSION['debug'] ) { echo "SESSIONS:<br />"; print_r($_SESSION); echo "<br /><br />COOKIES:<br />"; print_r($_COOKIE); echo "<br /><br />"; } ?>
 	<?php if ( $type == "home" ) { ?>
 	<!-- Main hero unit -->
       <div class="hero-unit">
@@ -107,8 +122,10 @@
         <div class="span4" id="span1">
           <h2>Twitter</h2>
 			<?php
-				if ( !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) )
-					echo '<botton class="btn btn-primary" onclick="ajax(\'/lib/twitter/index.php?call=statuses/home_timeline\', \'span1\')">Laad Tweets</botton>';
+				if ( !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
+					if ( $page[1] == "home" ) echo '<botton class="btn btn-primary" onclick="ajax(\'/lib/twitter/index.php?call=statuses/home_timeline\', \'span1\')">Laad Tweets</botton>';
+					if ( $page[1] == "notify" ) echo '<botton class="btn btn-primary" onclick="ajax(\'/lib/twitter/index.php?call=statuses/mentions\', \'span1\')">Laad Tweets</botton>';
+				}
 				else 
 					echo '<a href="/lib/twitter/clearsessions.php"><img src="/lib/layout/img/twitter.png" alt="Sign in with Twitter" /></a>';
 			?>
@@ -117,8 +134,10 @@
         <div class="span4" id="span2">
           <h2>Facebook</h2>
 			<?php
-				if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) )
-					echo '<botton class="btn btn-primary" onclick="ajax(\'/lib/facebook/index.php?call=/me/home\', \'span2\')">Laad Posts</botton>';
+				if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) ) {
+					if ( $page[1] == "home" ) echo '<botton class="btn btn-primary" onclick="ajax(\'/lib/facebook/index.php?call=/me/home\', \'span2\')">Laad Posts</botton>';
+					if ( $page[1] == "notify" ) echo '<botton class="btn btn-primary" onclick="ajax(\'/lib/facebook/index.php?call=/me/home\', \'span2\')">Laad Posts</botton>';
+				}
 				else 
 					echo '<a href="/lib/facebook/index.php?action=auth"><img src="/lib/layout/img/facebook.png" alt="Sign in with Facebook" /></a>';		
 			?>

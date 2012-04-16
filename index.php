@@ -19,6 +19,7 @@ if ( !empty($_SESSION['userid']) && !empty($_SESSION['session']) ) {
 			"oauth_token" => $data['tw_token'],
 			"oauth_token_secret" => $data['tw_secret']
 		);
+		if ( empty($_SESSION['facebook']) && !empty($data['facebook']) ) header("Location: /lib/facebook");
 	}
 	else {
 		unset($_SESSION['userid']);
