@@ -174,7 +174,7 @@
 		<div class="modal-body" style="text-align: center;" id="imgModalBody">
 			<p><img src="/lib/layout/img/ajax-loader.gif" alt="Loading..." /></p>
 		</div>
-		<div class="modal-footer">
+		<div id="imgModalFooter" class="modal-footer">
 		</div>
     </div>
 
