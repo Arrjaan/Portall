@@ -37,7 +37,7 @@ function linkify_tweet($tweet) {
 if ( $_REQUEST['call'] == "statuses/update" ) echo $connection->http_code;
 if ( $_REQUEST['call'] == "account/verify_credentials" ) {	
 	echo "<h2>". $tweets->name ."</h2>";
-	$u_tweets = $connection->get("statuses/user_timeline", array("screen_name" => $tweets[0]->screen_name, "count" => "10"));
+	$u_tweets = $connection->get("statuses/user_timeline", array("screen_name" => $tweets->screen_name, "count" => "10"));
 	$connection->get("users/profile_image/".$tweets->screen_name, array("size" => "bigger"));
 	echo '<table><tbody><tr><td><img src="'. $connection->http_info['redirect_url'] .'" /></td><td>';
 	
@@ -73,9 +73,13 @@ if ( $_REQUEST['call'] == "account/verify_credentials" ) {
 if ( $_REQUEST['call'] == "users/lookup" ) {	
 	echo "<h2>". $tweets[0]->name ."</h2>";
 	$u_tweets = $connection->get("statuses/user_timeline", array("screen_name" => $tweets[0]->screen_name, "count" => "10"));
-	$connection->get("users/profile_image/".$tweets[0]->screen_name, array("size" => "bigger"));
-	echo '<table><tbody><tr><td><img src="'. $connection->http_info['redirect_url'] .'" /></td><td>';
 	
+	$connection->get("users/profile_image/".$tweets[0]->screen_name, array("size" => "bigger"));
+	$bigger = $connection->http_info['redirect_url'];
+	$connection->get("users/profile_image/".$tweets[0]->screen_name, array("size" => "original"));
+	$original = $connection->http_info['redirect_url'];
+	
+	echo '<table class="table"><tr><td><a onclick="loadIMG(\'' .$tweets[0]->name. '\',\''.$original.'\');" data-toggle="modal" href="#imgModal"><img src="'. $bigger .'" /></a></td><td>';
 	
 	echo '</td></tr></table>';
 	

@@ -9,6 +9,8 @@
 	  'appId'  => CONSUMER_KEY,
 	  'secret' => CONSUMER_SECRET,
 	));
+	
+	//die(print_r($_POST,true));
 
 	// Get User ID
 	$user = $facebook->getUser();
@@ -46,7 +48,7 @@
 	
 	if ( !$user ) {
 		$params = array(
-			'scope' => 'user_status, friends_status, user_activities, friends_activities, read_stream, user_likes, friends_likes, read_mailbox, read_stream, manage_notifications, user_hometown, friends_hometown, user_education_history, friends_education_history, user_birthday, friends_birthday,user_relationships, friends_relationships, user_relationship_details, friends_relationship_details'
+			'scope' => 'publish_stream, user_status, friends_status, user_activities, friends_activities, read_stream, user_likes, friends_likes, read_mailbox, read_stream, manage_notifications, user_hometown, friends_hometown, user_education_history, friends_education_history, user_birthday, friends_birthday,user_relationships, friends_relationships, user_relationship_details, friends_relationship_details'
 		);
 		$loginUrl = $facebook->getLoginUrl($params);	
 		header("Location: ".$loginUrl);
@@ -61,6 +63,8 @@
 		$args = $_POST;
 		unset($args['call']);
 		$wall = $facebook->api($_POST['call'],'POST',$args);
+		if ( !empty($wall['message']) ) echo '200';
+		else echo ':(';
 	}
 	
 	if ( $_REQUEST['call'] == "/me/home" ) {	
@@ -93,7 +97,7 @@
 		$data = json_decode(file_get_contents("https://graph.facebook.com/".$wall['id']."?access_token=".$facebook->getAccessToken()),true);
 		
 		echo "<h2>". $wall['name'] ."</h2>";
-		echo '<table><tbody><tr><td><img src="http://graph.facebook.com/'.$wall['id'].'/picture?type=normal" /></td><td>';
+		echo '<table class="table"><tr><td><a onclick="loadIMG(\''.$data['name'].'\',\'http://graph.facebook.com/'.$wall['id'].'/picture?type=large\');" data-toggle="modal" href="#imgModal"><img src="http://graph.facebook.com/'.$wall['id'].'/picture?type=normal" /></a></td><td>';
 		
 		echo  '<strong>'.$data['name'].'</strong><br />';
 		if ( !empty($data['birthday']) ) echo 'Birthday: '.$data['birthday'].'<br />';

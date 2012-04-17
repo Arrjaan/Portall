@@ -44,26 +44,33 @@
 			setTimeout("uTwitter()",45000);
 		}
 		$(document).ready(function(){
-			document.getElementById('span3').innerHTML = '<h2>User Info</h2>Loading...';
-			<?php 
-			if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) ) {
-			?>
-			ajax('/lib/facebook/index.php?call=/<?php echo $_SESSION['facebook']; ?>', 'span3');
-			uFacebook();
-			document.getElementById('span2').innerHTML = '<h2>Facebook</h2>Loading...';
-			<?php
-			}
+			var postStatus = new Array(); 
+			setStatus("Twitter","true");
+			setStatus("Facebook","false");	
+			setFBID("<?php echo $_SESSION['facebook']; ?>");
+			document.getElementById('span3').innerHTML = '<h2>User Info</h2><img src="/lib/layout/img/ajax-loader.gif" alt="Loading..." />';
+			<?php // FB + TW
 			if ( isset($_SESSION['facebook']) && !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
+			?>
+			uTwitter();
+			uFacebook();
+			ajax('/lib/facebook/index.php?call=/<?php echo $_SESSION['facebook']; ?>', 'span3');
+			document.getElementById('span1').innerHTML = '<h2>Twitter</h2><img src="/lib/layout/img/ajax-loader.gif" alt="Loading..." />';
+			document.getElementById('span2').innerHTML = '<h2>Facebook</h2><img src="/lib/layout/img/ajax-loader.gif" alt="Loading..." />';
+			<?php
+			} // TW
+			if ( !isset($_SESSION['facebook']) && !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
 			?>	
 			uTwitter();
-			document.getElementById('span1').innerHTML = '<h2>Twitter</h2>Loading...';
-			<?php
-			}
-			if ( !isset($_SESSION['facebook']) && !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
-			?>
 			ajax('/lib/twitter/index.php?call=account/verify_credentials','span3');
-			uTwitter();
-			document.getElementById('span1').innerHTML = '<h2>Twitter</h2>Loading...';
+			document.getElementById('span1').innerHTML = '<h2>Twitter</h2><img src="/lib/layout/img/ajax-loader.gif" alt="Loading..." />';
+			<?php
+			} // FB
+			if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) && empty($_SESSION['access_token']) && empty($_SESSION['access_token']['oauth_token']) && empty($_SESSION['access_token']['oauth_token_secret']) ) {
+			?>
+			uFacebook();
+			ajax('/lib/facebook/index.php?call=/<?php echo $_SESSION['facebook']; ?>', 'span3');
+			document.getElementById('span2').innerHTML = '<h2>Facebook</h2><img src="/lib/layout/img/ajax-loader.gif" alt="Loading..." />';
 			<?php
 			}
 			?>
@@ -96,7 +103,7 @@
 				</li>
 				<li><a href="/lib/twitter/clearsessions.php?logout">Logout</a></li>
             </ul>
-          </div><!--/.nav-collapse -->
+          </div>
         </div>
       </div>
     </div>
@@ -107,17 +114,16 @@
 	<span id="source"></span>
 	<?php } ?>
 	<?php if ( $type == "home" ) { ?>
-	<!-- Main hero unit -->
       <div class="hero-unit">
         <h1>Portall</h1>
         <?php echo $content; ?>
       </div>
 	<?php } else { ?>
-	<form onsubmit="post('/lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'postM'); document.getElementById('nTweet').value = ''; return false;" style="text-align: center;" >
+	<form onsubmit="status();return false;" style="text-align: center;" >
 		<div id="postM" class="input-append control-group">
 			<div class="controls">
-				<input onkeyup="count(this.value)" type="text" id="nTweet" class="input-large search-query"/>
-				<button type="button" onclick="post('/lib/twitter/index.php?call=statuses/update','status=' + encodeURIComponent(document.getElementById('nTweet').value), 'postM'); document.getElementById('nTweet').value = '';" class="btn">Tweet!</button>
+				<label id="postPrefs">Twitter <a onclick="setStatus('Twitter', 'false');"><i class="icon-ok"></i></a> | Facebook <a onclick="setStatus('Facebook', 'true');"><i class="icon-remove"></i></a></label>
+				<input size="150" onkeyup="count(this.value)" type="text" id="nTweet" class="input-xlarge search-query"/><button type="button" onclick="status();" class="btn">Tweet!</button>
 				<span id="postMHelp" class="help-inline">140</span>
 			</div>
 		</div>	
@@ -159,15 +165,24 @@
       </footer>
 
     </div> <!-- /container -->
+	
+	<div class="modal fade" id="imgModal">
+		<div class="modal-header">
+			<a class="close" data-dismiss="modal"><i class="icon-remove"></i></a>
+			<h3 id="imgModalTitle"></h3>
+		</div>
+		<div class="modal-body" style="text-align: center;" id="imgModalBody">
+			<p><img src="/lib/layout/img/ajax-loader.gif" alt="Loading..." /></p>
+		</div>
+		<div class="modal-footer">
+		</div>
+    </div>
 
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/lib/layout/js/jquery.js"></script>
-    <script src="/lib/layout/js/bootstrap-transition.js"></script>
-    <script src="/lib/layout/js/bootstrap-alert.js"></script>
-    <script src="/lib/layout/js/bootstrap-modal.js"></script>
-    <script src="/lib/layout/js/bootstrap-dropdown.js"></script>
+    <!--
+	<script src="/lib/layout/js/jquery.js"></script>
     <script src="/lib/layout/js/bootstrap-scrollspy.js"></script>
     <script src="/lib/layout/js/bootstrap-tab.js"></script>
     <script src="/lib/layout/js/bootstrap-tooltip.js"></script>
@@ -176,5 +191,10 @@
     <script src="/lib/layout/js/bootstrap-collapse.js"></script>
     <script src="/lib/layout/js/bootstrap-carousel.js"></script>
     <script src="/lib/layout/js/bootstrap-typeahead.js"></script>
+	-->
+	<script src="/lib/layout/js/bootstrap-transition.js"></script>
+    <script src="/lib/layout/js/bootstrap-modal.js"></script>
+	<script src="/lib/layout/js/bootstrap-alert.js"></script>
+	<script src="/lib/layout/js/bootstrap-dropdown.js"></script>
   </body>
 </html>
