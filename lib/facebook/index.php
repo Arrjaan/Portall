@@ -63,7 +63,7 @@
 		$args = $_POST;
 		unset($args['call']);
 		$wall = $facebook->api($_POST['call'],'POST',$args);
-		if ( !empty($wall['message']) ) echo '200';
+		if ( !empty($wall['id']) ) echo '200';
 		else print_r($wall);
 		die();
 	}

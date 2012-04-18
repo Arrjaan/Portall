@@ -23,8 +23,10 @@ if ( $_SERVER['REQUEST_METHOD'] == "POST" & isset($_REQUEST['call']) ) {
 	$tweets = $connection->post($_REQUEST['call'], $_POST);
 }
 
-/* Return status code when tweeting. */
+/* Return status code when tweeting, retweeting or favoriting. */
 if ( $_REQUEST['call'] == "statuses/update" ) echo $connection->http_code;
+if ( preg_match("/statuses\/retweet\/[0-9]./",$_REQUEST['call']) ) echo $connection->http_code;
+if ( preg_match("/favorites\/create/\/[0-9]./",$_REQUEST['call']) ) echo $connection->http_code;
 if ( $_REQUEST['call'] == "account/verify_credentials" ) {	
 	echo "<h2>". $tweets->name ."</h2>";
 	$u_tweets = $connection->get("statuses/user_timeline", array("screen_name" => $tweets->screen_name, "count" => "10"));
