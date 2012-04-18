@@ -27,7 +27,9 @@ function makeTable($tweets) {
 		}
 		
 		if ( isset($tweet->entities->media[0]->sizes->thumb->w) ) 
-			echo '<img src="'. $tweet->entities->media[0]->media_url . ':thumb" /><br />';
+			echo '<a onclick="loadIMG(\'Image\',\''. $tweet->entities->media[0]->media_url .'\');" data-toggle="modal" href="#imgModal"><img src="'. $tweet->entities->media[0]->media_url . ':thumb" /></a><br />';
+		if ( isset($tweet->retweeted_status->entities->media[0]->sizes->thumb->w) ) 
+			echo '<a onclick="loadIMG(\'Image\',\''. $tweet->retweeted_status->entities->media[0]->media_url .'\');" data-toggle="modal" href="#imgModal"><img src="'. $tweet->retweeted_status->entities->media[0]->media_url . ':thumb" /></a><br />';
 		elseif ( preg_match("/twitpic\.com/",$tweet->entities->urls[0]->display_url) ) {
 			$code = explode("/",$tweet->entities->urls[0]->display_url);
 			echo '<img src="http://twitpic.com/show/mini/'.$code[1].'" />';
@@ -35,7 +37,7 @@ function makeTable($tweets) {
 		elseif ( preg_match("/youtube\.com\/watch\?v/",$tweet->entities->urls[0]->expanded_url) ) {
 			$url = explode("=",$tweet->entities->urls[0]->expanded_url);
 			$url = $url[1];
-			echo '<iframe width="150" height="131" src="http://www.youtube.com/embed/'.$url.'" frameborder="0" allowfullscreen></iframe><br />';
+			echo '<a onclick="loadYT(\''. $url .'\');" data-toggle="modal" href="#imgModal"><img src="http://img.youtube.com/vi/'.$url.'/2.jpg" /></a><br />';
 		}
 		
 		echo '<span class="twToolBox">
@@ -69,7 +71,7 @@ function linkify_tweet($twdata) {
 	else $tweet = $twdata->text;
 
 	$tweet = str_replace($twdata->entities->urls[0]->url,
-        '<a onclick="loadIFrame(\''. $twdata->entities->urls[0]->url .'\');" data-toggle="modal" href="#imgModal">'. $twdata->entities->urls[0]->display_url .'</a>',
+        '<a onclick="loadIFrame(\''. str_replace("https","http",$twdata->entities->urls[0]->url) .'\');" data-toggle="modal" href="#imgModal">'. $twdata->entities->urls[0]->display_url .'</a>',
         $tweet);
 	$tweet = preg_replace('/(^|\s)@(\w+)/',
         '\1<a href="#" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name=\2\',\'span3\');">@\2</a>',
