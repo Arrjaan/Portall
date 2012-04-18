@@ -64,7 +64,8 @@
 		unset($args['call']);
 		$wall = $facebook->api($_POST['call'],'POST',$args);
 		if ( !empty($wall['message']) ) echo '200';
-		else echo ':(';
+		else print_r($wall);
+		die();
 	}
 	
 	if ( $_REQUEST['call'] == "/me/home" ) {	
