@@ -25,19 +25,30 @@ if ( $_SERVER['REQUEST_METHOD'] == "POST" & isset($_REQUEST['call']) ) {
 
 /* Return status code when tweeting, retweeting or favoriting. */
 if ( $_REQUEST['call'] == "statuses/update" ) echo $connection->http_code;
-if ( preg_match("/statuses\/retweet\/[0-9]./",$_REQUEST['call']) ) echo $connection->http_code;
-if ( preg_match("/favorites\/create/\/[0-9]./",$_REQUEST['call']) ) echo $connection->http_code;
+if ( preg_match("/statuses\/retweet\/[0-9]*/",$_REQUEST['call']) ) echo $connection->http_code;
+if ( preg_match("/favorites\/create/\/[0-9]*/",$_REQUEST['call']) ) echo $connection->http_code;
+if ( $_REQUEST['call'] == "friendships/destroy" || $_REQUEST['call'] == "friendships/create" ) {
+	$tweets = $connection->post("users/lookup", array("user_id" => $_POST['user_id']));
+	$lookup = $_POST['user_id'];
+}
 if ( $_REQUEST['call'] == "account/verify_credentials" ) {	
 	echo "<h2>". $tweets->name ."</h2>";
 	$u_tweets = $connection->get("statuses/user_timeline", array("screen_name" => $tweets->screen_name, "count" => "10"));
+	
 	$connection->get("users/profile_image/".$tweets->screen_name, array("size" => "bigger"));
+	
 	echo '<table><tbody><tr><td><img src="'. $connection->http_info['redirect_url'] .'" /></td><td>';
 	
+	echo "<strong>". $tweets->name ."</strong> @".$tweets->screen_name ."<br />";
+	echo "Bio: ".$tweets->description ."<br />";
+	echo "Tweets: ".$tweets->tweets_count ."<br />";
+	echo "Followers: ".$tweets->followers_count ." | Follows: ". $tweets->friends_count ." | Favorites: ". $tweets->favourites_count ." | Listed: ". $tweets->listed_count ."<br />";
+		
 	echo '</td></tr></table>';
 
 	makeTable($tweets);
 }
-if ( $_REQUEST['call'] == "users/lookup" ) {	
+if ( $_REQUEST['call'] == "users/lookup" || isset($lookup) ) {	
 	echo "<h2>". $tweets[0]->name ."</h2>";
 	$u_tweets = $connection->get("statuses/user_timeline", array("screen_name" => $tweets[0]->screen_name, "count" => "10"));
 	
@@ -47,6 +58,14 @@ if ( $_REQUEST['call'] == "users/lookup" ) {
 	$original = $connection->http_info['redirect_url'];
 	
 	echo '<table class="table"><tr><td><a onclick="loadIMG(\'' .$tweets[0]->name. '\',\''.$original.'\');" data-toggle="modal" href="#imgModal"><img src="'. $bigger .'" /></a></td><td>';
+	
+	echo "<strong>". $tweets[0]->name ."</strong> @".$tweets[0]->screen_name ."<br />";
+	echo "Bio: <em>".$tweets[0]->description ."</em><br />";
+	echo "Tweets: ".$tweets[0]->statuses_count ."<br />";
+	echo "Followers: ".$tweets[0]->followers_count ." | Follows: ". $tweets[0]->friends_count ." | Favorites: ". $tweets[0]->favourites_count ." | Listed: ". $tweets[0]->listed_count ."<br />";
+	
+	if ( $tweets[0]->following ) echo '<button class="btn btn-danger" onclick="post(\'/lib/twitter/index.php?call=friendships/destroy\',\'user_id='. $tweets[0]->id .'\',\'span3\');">Unfollow</button>';
+	if ( !$tweets[0]->following ) echo '<button class="btn btn-primary" onclick="post(\'/lib/twitter/index.php?call=friendships/create\',\'user_id='. $tweets[0]->id .'\',\'span3\');">Follow</button>';
 	
 	echo '</td></tr></table>';
 				
