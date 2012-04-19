@@ -16,6 +16,12 @@ $access_token = $_SESSION['access_token'];
 /* Create a TwitterOauth object with consumer/user tokens. */
 $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token['oauth_token'], $access_token['oauth_token_secret']);
 
+if ( !isset($_SESSION['screen_name']) ) {
+	$acc = $connection->get("account/verify_credentials");
+	$_SESSION['screen_name'] = $acc->screen_name;
+}
+if ( !isset($_SESSION['since_id']) ) $_SESSION['since_id'] = 1;
+
 /* Post request. */
 if ( $_SERVER['REQUEST_METHOD'] == "GET" && isset($_REQUEST['call']) ) 
 	$tweets = $connection->get($_REQUEST['call'], array("include_entities" => "true"));
@@ -25,8 +31,6 @@ if ( $_SERVER['REQUEST_METHOD'] == "POST" & isset($_REQUEST['call']) ) {
 
 /* Return status code when tweeting, retweeting or favoriting. */
 if ( $_REQUEST['call'] == "statuses/update" ) echo $connection->http_code;
-if ( preg_match("/statuses\/retweet\/[0-9]*/",$_REQUEST['call']) ) echo $connection->http_code;
-if ( preg_match("/favorites\/create/\/[0-9]*/",$_REQUEST['call']) ) echo $connection->http_code;
 if ( $_REQUEST['call'] == "friendships/destroy" || $_REQUEST['call'] == "friendships/create" ) {
 	$tweets = $connection->post("users/lookup", array("user_id" => $_POST['user_id']));
 	$lookup = $_POST['user_id'];
@@ -76,6 +80,14 @@ if ( $_REQUEST['call'] == "users/lookup" || isset($lookup) ) {
 if ( $_REQUEST['call'] == "statuses/home_timeline" || $_REQUEST['call'] == "statuses/mentions" ) {	
 	echo "<h2>Twitter</h2>";
 	makeTable($tweets);
+	
+	foreach ( $tweets as $tweet ) {
+		if ( preg_match("/\@".$_SESSION['screen_name']."/",$tweet->text) && $_SESSION['since_id'] < $tweet->id ) {
+			$_SESSION['since_id'] = $tweet->id;
+			echo "<span style='display: none;'>PLAYSND</span>";
+			break;
+		}
+	}
 }
 
 if ( !isset($_REQUEST['call']) ) header("Location: /");

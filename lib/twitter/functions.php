@@ -1,6 +1,12 @@
 <?php
 
 function makeTable($tweets) {
+	if ( isset($tweets->error) ) {
+		if ( $tweets->error == "Not authorized" ) echo "<em>The tweets from this user are protected and can not be showed.</em>";
+		else echo "<em>Error: ". $tweets->error .".</em>";
+		return false;
+	}
+	
 	echo '<table class="table">
 			<thead>
 				<tr>';

@@ -63,7 +63,7 @@ if (200 == $connection->http_code) {
 	}
 	else {
 		$_SESSION['session'] = substr(sha1(time().$twuser->id),0,10);
-		$q = $db->query("insert into `users` values ('0', '". $twuser->name ."', '', '". $twuser->id ."', '0', '', '".time()."','".$_SESSION['session']."')");
+		$q = $db->query("insert into `users` values ('0', '". $twuser->name ."', '', '". $twuser->id ."', '', '', '0', '', '".time()."','".$_SESSION['session']."')");
 		$_SESSION['userid'] = $db->insert_id;
 	}	
 	setcookie("portall_session",$_SESSION['session'],time()+60*60*24,'/','portall.eu5.org');
