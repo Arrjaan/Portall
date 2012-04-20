@@ -42,7 +42,8 @@ function makeTable($tweets) {
 		}
 		elseif ( preg_match("/youtube\.com\/watch\?v/",$tweet->entities->urls[0]->expanded_url) ) {
 			$url = explode("=",$tweet->entities->urls[0]->expanded_url);
-			$url = $url[1];
+			$url = explode("&",$url[1]);
+			$url = $url[0];
 			echo '<a onclick="loadYT(\''. $url .'\');" data-toggle="modal" href="#imgModal"><img src="http://img.youtube.com/vi/'.$url.'/2.jpg" /></a><br />';
 		}
 		
