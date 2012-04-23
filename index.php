@@ -1,7 +1,5 @@
 <?php
 
-//error_reporting(E_WARNING);
-
 require('config.SECURE.inc.php');
 
 session_start();

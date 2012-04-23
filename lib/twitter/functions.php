@@ -7,7 +7,7 @@ function makeTable($tweets) {
 		return false;
 	}
 	
-	echo '<table class="table">
+	echo '<table class="table" id="twitter">
 			<thead>
 				<tr>';
 				if ( $_REQUEST['call'] == "statuses/mentions" ) echo '<th>Mentions</th>';
@@ -21,14 +21,14 @@ function makeTable($tweets) {
 		if ( isset($tweet->retweeted_status) ) {
 			$twText = linkify_tweet($tweet);
 			echo '<img src="'. $tweet->retweeted_status->user->profile_image_url . '" />';
-			echo '</td><td><a class="none" style="color: #999;" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name='. $tweet->retweeted_status->user->screen_name .'\',\'span3\');">'. $tweet->retweeted_status->user->name .'</a> 
+			echo '</td><td class="tweetrow"><a class="none" style="color: #999;" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name='. $tweet->retweeted_status->user->screen_name .'\',\'span3\');">'. $tweet->retweeted_status->user->name .'</a> 
 			(retweeted by <a class="none" style="color: #999;" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name='. $tweet->user->screen_name .'\',\'span3\');">'. $tweet->user->name .'</a>)<br />'. $twText .'<br />';
 			$tweetid = $tweet->retweeted_status->id;
 		}
 		else {
 			$twText = linkify_tweet($tweet);
 			echo '<img src="'. $tweet->user->profile_image_url . '" />';
-			echo '</td><td><a class="none" style="color: #999;" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name='. $tweet->user->screen_name .'\',\'span3\');">'. $tweet->user->name .'</a>:<br />'. $twText .'<br />';
+			echo '</td><td class="tweetrow"><a class="none" style="color: #999;" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name='. $tweet->user->screen_name .'\',\'span3\');">'. $tweet->user->name .'</a>:<br />'. $twText .'<br />';
 			$tweetid = $tweet->id;
 		}
 		
@@ -38,7 +38,7 @@ function makeTable($tweets) {
 			echo '<a onclick="loadIMG(\'Image\',\''. $tweet->retweeted_status->entities->media[0]->media_url .'\');" data-toggle="modal" href="#imgModal"><img src="'. $tweet->retweeted_status->entities->media[0]->media_url . ':thumb" /></a><br />';
 		elseif ( preg_match("/twitpic\.com/",$tweet->entities->urls[0]->display_url) ) {
 			$code = explode("/",$tweet->entities->urls[0]->display_url);
-			echo '<img src="http://twitpic.com/show/mini/'.$code[1].'" />';
+			echo '<a onclick="loadIMG(\'Twitpic\',\'http://twitpic.com/show/thumb/'.$code[1].'\');" data-toggle="modal" href="#imgModal"><img src="http://twitpic.com/show/mini/'.$code[1].'" /></a><br />';
 		}
 		elseif ( preg_match("/youtube\.com\/watch\?v/",$tweet->entities->urls[0]->expanded_url) ) {
 			$url = explode("=",$tweet->entities->urls[0]->expanded_url);
@@ -48,7 +48,7 @@ function makeTable($tweets) {
 		}
 		
 		echo '<span class="twToolBox">
-			<a onclick="reply(\''. $tweet->user->screen_name .'\',\''. $tweet->id .'\');"><img class="hoverClass" src="/lib/layout/img/icons/reply.png" alt="&raquo; Reply" /></a> ';
+			<a href="#top" onclick="reply(\''. $tweet->user->screen_name .'\',\''. $tweet->id .'\');"><img class="hoverClass" src="/lib/layout/img/icons/reply.png" alt="&raquo; Reply" /></a> ';
 		if ( $tweet->retweeted == 1 || $tweet->retweeted_status->retweeted == 1 )
 			echo '<a onclick="post(\'/lib/twitter/index.php?call=statuses/destroy/'. $tweet->id .',\'\', \'postM\');"><img class="hoverClass" src="/lib/layout/img/icons/retweet_on.png" alt="Retweeted!" /></a> ';
 		else 
@@ -57,14 +57,15 @@ function makeTable($tweets) {
 			echo '<a onclick="post(\'/lib/twitter/index.php?call=favorites/create/'. $tweetid .'\',\'\', \'postM\');"><img class="hoverClass" src="/lib/layout/img/icons/favorite_on.png" alt="Favorited!" /></a> ';
 		else 
 			echo '<a onclick="post(\'/lib/twitter/index.php?call=favorites/destroy/'. $tweetid .'\',\'\', \'postM\');"><img class="hoverClass" src="/lib/layout/img/icons/favorite.png" alt="&raquo; Favorite" /></a> ';
+		echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($tweet->created_at)).'</span>';
 		echo '</span>';
 		
 		echo '</td></tr>';
 	}
 	
-	echo"</tbody>
+	echo "</tbody>
 				</table>";
-				
+	
 	if ( $_SESSION['debug'] ) print_r($tweets);
 }
 

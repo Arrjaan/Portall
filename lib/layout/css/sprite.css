@@ -18,12 +18,8 @@
 #panel2b a:hover {background: transparent url(test-3.jpg) -96px -200px no-repeat;}
 #panel3b a:hover {background: transparent url(test-3.jpg) -172px -200px no-repeat;}
 #panel4b a:hover {background: transparent url(test-3.jpg) -283px -200px no-repeat;}
-
-
-.twToolBox {
-	display: none;
-}
 */
 
 a { cursor: pointer; }
 a .none { color: @black; }
+.twToolBox { visibility: hidden; color: #999; }
