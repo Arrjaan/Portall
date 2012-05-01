@@ -27,7 +27,7 @@
 	<script src="/lib/js/ajax.js"></script>
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target=".subnav" data-offset="50">
 	<script>
 		function uFacebook() {
 			<?php 
@@ -43,37 +43,50 @@
 			?>
 			setTimeout("uTwitter()",45000);
 		}
+		function incBar() {
+			for ( i=1;i<=3;i++ ) {
+				var node = document.getElementById("span"+i).getElementsByTagName("div");
+				var node = node[1];
+				var old = node.style.width;
+				old = old.replace("%","");
+				old = Number(old);
+				old = old + 2;
+				node.style.width = old + "%";
+			}
+			setTimeout("incBar();",80);
+		}
 		$(document).ready(function(){
 			var postStatus = new Array(); 
 			setStatus("Twitter","true");
 			setStatus("Facebook","false");	
 			setFBID("<?php echo $_SESSION['facebook']; ?>");
-			document.getElementById('span3').innerHTML = '<h2>User Info</h2><img src="/lib/layout/img/ajax-loader.gif" alt="Loading..." />';
+			document.getElementById('span3').innerHTML = '<h2>User Info</h2><div class="progress progress-striped active"><div class="bar" style="width: 0%;"></div></div>';
 			<?php // FB + TW
 			if ( isset($_SESSION['facebook']) && !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
 			?>
 			uTwitter();
 			uFacebook();
 			ajax('/lib/facebook/index.php?call=/<?php echo $_SESSION['facebook']; ?>', 'span3');
-			document.getElementById('span1').innerHTML = '<h2>Twitter</h2><img src="/lib/layout/img/ajax-loader.gif" alt="Loading..." />';
-			document.getElementById('span2').innerHTML = '<h2>Facebook</h2><img src="/lib/layout/img/ajax-loader.gif" alt="Loading..." />';
+			document.getElementById('span1').innerHTML = '<h2>Twitter</h2><div class="progress progress-striped active"><div class="bar" style="width: 0%;"></div></div>';
+			document.getElementById('span2').innerHTML = '<h2>Facebook</h2><div class="progress progress-striped active"><div class="bar" style="width: 0%;"></div></div>';
 			<?php
 			} // TW
 			if ( !isset($_SESSION['facebook']) && !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
 			?>	
 			uTwitter();
 			ajax('/lib/twitter/index.php?call=account/verify_credentials','span3');
-			document.getElementById('span1').innerHTML = '<h2>Twitter</h2><img src="/lib/layout/img/ajax-loader.gif" alt="Loading..." />';
+			document.getElementById('span1').innerHTML = '<h2>Twitter</h2><div class="progress progress-striped active"><div class="bar" style="width: 0%;"></div></div>';
 			<?php
 			} // FB
 			if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) && empty($_SESSION['access_token']) && empty($_SESSION['access_token']['oauth_token']) && empty($_SESSION['access_token']['oauth_token_secret']) ) {
 			?>
 			uFacebook();
 			ajax('/lib/facebook/index.php?call=/<?php echo $_SESSION['facebook']; ?>', 'span3');
-			document.getElementById('span2').innerHTML = '<h2>Facebook</h2><img src="/lib/layout/img/ajax-loader.gif" alt="Loading..." />';
+			document.getElementById('span2').innerHTML = '<h2>Facebook</h2><div class="progress progress-striped active"><div class="bar" style="width: 0%;"></div></div>';
 			<?php
 			}
 			?>
+			incBar();
 		});
 	</script>
     <div class="navbar navbar-fixed-top">
@@ -109,6 +122,15 @@
     </div>
 
     <div class="container" id="content">
+		<header  class="jumbotron subhead visible-phone">
+		<div class="subnav">
+			<ul class="nav nav-pills">
+				<li class="active"><a href="#tw">Twitter</a></li>
+				<li class=""><a href="#fb">Facebook</a></li>
+				<li class=""><a href="#ui">User Info</a></li>
+			</ul>
+		</div>
+		</header>
 		<audio id="sound">
 			<source src="/lib/sound/song.ogg" type="audio/ogg" />
 			<source src="/lib/sound/song.mp3" type="audio/mpeg" />
@@ -136,7 +158,7 @@
 	</form>
       <!-- Columns -->
       <div class="row">
-		<a name="tw"></a>
+		<a id="tw"></a>
         <div class="span4" id="span1">
           <h2>Twitter</h2>
 			<?php
@@ -148,7 +170,7 @@
 					echo '<a href="/lib/twitter/clearsessions.php"><img src="/lib/layout/img/twitter.png" alt="Sign in with Twitter" /></a>';
 			?>
 		</div>
-		<a name="fb"></a>
+		<a id="fb"></a>
         <div class="span4" id="span2">
           <h2>Facebook</h2>
 			<?php
@@ -160,6 +182,7 @@
 					echo '<a href="/lib/facebook/index.php?action=auth"><img src="/lib/layout/img/facebook.png" alt="Sign in with Facebook" /></a>';		
 			?>
 		</div>
+		<a id="ui"></a>
 		<div class="span4" id="span3">
 		</div>
       </div>
