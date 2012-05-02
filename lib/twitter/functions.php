@@ -40,6 +40,10 @@ function makeTable($tweets) {
 			$code = explode("/",$tweet->entities->urls[0]->display_url);
 			echo '<a onclick="loadIMG(\'Twitpic\',\'http://twitpic.com/show/thumb/'.$code[1].'\');" data-toggle="modal" href="#imgModal"><img src="http://twitpic.com/show/mini/'.$code[1].'" /></a><br />';
 		}
+		elseif ( preg_match("/yfrog\.com/",$tweet->entities->urls[0]->display_url) ) {
+			$code = explode("/",$tweet->entities->urls[0]->display_url);
+			echo '<a onclick="loadIMG(\'yfrog\',\'http://yfrog.com/'.$code[1].':medium\');" data-toggle="modal" href="#imgModal"><img src="http://yfrog.com/'.$code[1].':small" /></a><br />';
+		}
 		elseif ( preg_match("/youtube\.com\/watch\?v/",$tweet->entities->urls[0]->expanded_url) ) {
 			$url = explode("=",$tweet->entities->urls[0]->expanded_url);
 			$url = explode("&",$url[1]);
