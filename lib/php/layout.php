@@ -1,6 +1,6 @@
 <?php session_start(); if ( isset($_GET['debug']) ) $_SESSION['debug'] = true; if ( isset($_GET['halt']) ) $_SESSION['debug'] = false; if ( !isset($_SESSION['debug']) ) $_SESSION['debug'] = false; ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: http://ogp.me/ns/website#">
   <head>
     <meta charset="utf-8">
     <title>Portall</title>
@@ -25,6 +25,11 @@
 	<!-- Le scripts -->
 	<script src="/lib/js/jquery.js"></script>
 	<script src="/lib/js/ajax.js"></script>
+		
+	<meta property="og:title" content="Portall">
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="http://portall.eu5.org/">
+	<meta property="og:image" content="http://ia.media-imdb.com/images/rock.jpg">
   </head>
 
   <body data-spy="scroll" data-target=".subnav" data-offset="50">
@@ -50,7 +55,7 @@
 				var old = node.style.width;
 				old = old.replace("%","");
 				old = Number(old);
-				old = old + 2;
+				old = old + 3 / i;
 				node.style.width = old + "%";
 			}
 			setTimeout("incBar();",80);
@@ -105,6 +110,7 @@
 				<li><a href="/notify">Notifications</a></li>
             </ul>
 			<ul class="nav pull-right">
+				<?php if ( $_SESSION['userid'] == '1' ) echo '<li><a href="/admin.SECURE">Administration</a></li>'; ?>
 				<li class="dropdown" id="menu1">
 					<a class="dropdown-toggle" data-toggle="dropdown" href="#menu1">Debug <b class="caret"></b></a>
 					<ul class="dropdown-menu">
@@ -148,10 +154,11 @@
       </div>
 	<?php } else { ?>
 	<form onsubmit="status();return false;" style="text-align: center;" >
-		<div id="postM" class="input-append control-group">
+		<div id="postM" class="control-group">
 			<div class="controls">
 				<label id="postPrefs">Twitter <a onclick="setStatus('Twitter', 'false');"><i class="icon-ok"></i></a> | Facebook <a onclick="setStatus('Facebook', 'true');"><i class="icon-remove"></i></a></label>
-				<input size="150" onkeyup="count(this.value)" type="text" id="nTweet" class="input-xlarge search-query"/><button type="button" onclick="status();" class="btn">Tweet!</button>
+				<textarea onkeyup="count(this.value)" class="input-xlarge span6" id="nTweet" rows="1"></textarea><br /><button type="button" onclick="status();" class="btn btn-primary">Send!</button>
+				<!-- <input size="150" onkeyup="count(this.value)" type="text" id="nTweet" class="input-xlarge search-query"/> -->
 				<span id="postMHelp" class="help-inline">140</span>
 			</div>
 		</div>	
