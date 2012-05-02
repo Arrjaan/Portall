@@ -21,7 +21,7 @@ function makeTable($tweets) {
 		if ( isset($tweet->retweeted_status) ) {
 			$twText = linkify_tweet($tweet);
 			echo '<img src="'. $tweet->retweeted_status->user->profile_image_url . '" />';
-			echo '</td><td class="tweetrow"><a class="none" style="color: #999;" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name='. $tweet->retweeted_status->user->screen_name .'\',\'span3\');">'. $tweet->retweeted_status->user->name .'</a> 
+			echo '</td><td class="msgRow"><a class="none" style="color: #999;" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name='. $tweet->retweeted_status->user->screen_name .'\',\'span3\');">'. $tweet->retweeted_status->user->name .'</a> 
 			(retweeted by <a class="none" style="color: #999;" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name='. $tweet->user->screen_name .'\',\'span3\');">'. $tweet->user->name .'</a>)<br />'. $twText .'<br />';
 			$tweetid = $tweet->retweeted_status->id;
 		}

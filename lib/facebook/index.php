@@ -67,7 +67,7 @@
 		else print_r($wall);
 		die();
 	}
-	
+	/* Wall */
 	if ( $_REQUEST['call'] == "/me/home" ) {	
 		$wall = $facebook->api('/me/home','GET');
         $wall = $wall['data'];
@@ -83,9 +83,15 @@
 		foreach ( $wall as $post ) {
 			if ( empty($post['message']) ) continue;
 			if ( isset($post['to']['data'][0]['name']) ) echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td><td><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a> <i class="icon-chevron-right"></i> <a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['to']['data'][0]['id'].'\',\'span3\');">'. $post['to']['data'][0]['name'] .'</a>:<br />'. $post['message'].'<br />';
-			else echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td><td><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a>:<br />'. $post['message'].'<br />';
+			else echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td><td class="msgRow"><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a>:<br />'. $post['message'].'<br />';
 			
 			if ( !empty($post['picture']) ) echo '<a href="'.$post['link'].'" target="_BLANK"><img src="'.$post['picture'].'" /></a><br />';
+			
+			echo '<span class="twToolBox">
+				<a href="#top1"><i class="icon-comment"></i></a> ';
+			echo '<a href="#top2"><i class="icon-thumbs-up"></i></a>';
+			echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($post['created_time'])).'</span>';
+			echo '</span>';
 			
 			echo '</td></tr>';
 		}
