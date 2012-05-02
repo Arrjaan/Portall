@@ -28,7 +28,7 @@ function makeTable($tweets) {
 		else {
 			$twText = linkify_tweet($tweet);
 			echo '<img src="'. $tweet->user->profile_image_url . '" />';
-			echo '</td><td class="tweetrow"><a class="none" style="color: #999;" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name='. $tweet->user->screen_name .'\',\'span3\');">'. $tweet->user->name .'</a>:<br />'. $twText .'<br />';
+			echo '</td><td class="msgRow"><a class="none" style="color: #999;" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name='. $tweet->user->screen_name .'\',\'span3\');">'. $tweet->user->name .'</a>:<br />'. $twText .'<br />';
 			$tweetid = $tweet->id;
 		}
 		

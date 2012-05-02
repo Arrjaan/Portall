@@ -89,7 +89,7 @@
 			
 			echo '<span class="twToolBox">
 				<a href="#top1"><i class="icon-comment"></i></a> ';
-			echo '<a href="#top2"><i class="icon-thumbs-up"></i></a>';
+			echo '<a href="#top2"><i class="icon-thumbs"></i></a> ';
 			echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($post['created_time'])).'</span>';
 			echo '</span>';
 			

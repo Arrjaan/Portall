@@ -221,17 +221,6 @@
 	
 	-->
 	<script src="/lib/layout/js/jquery.js"></script>
-    <script src="/lib/layout/js/bootstrap-scrollspy.js"></script>
-    <script src="/lib/layout/js/bootstrap-tab.js"></script>
-    <script src="/lib/layout/js/bootstrap-tooltip.js"></script>
-    <script src="/lib/layout/js/bootstrap-popover.js"></script>
-    <script src="/lib/layout/js/bootstrap-button.js"></script>
-    <script src="/lib/layout/js/bootstrap-carousel.js"></script>
-    <script src="/lib/layout/js/bootstrap-typeahead.js"></script>
-	<script src="/lib/layout/js/bootstrap-collapse.js"></script>
-	<script src="/lib/layout/js/bootstrap-transition.js"></script>
-    <script src="/lib/layout/js/bootstrap-modal.js"></script>
-	<script src="/lib/layout/js/bootstrap-alert.js"></script>
-	<script src="/lib/layout/js/bootstrap-dropdown.js"></script>
+    <script src="/lib/layout/js/bootstrap.min.js"></script>
   </body>
 </html>
