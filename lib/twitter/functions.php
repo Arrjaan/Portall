@@ -1,6 +1,6 @@
 <?php
 
-function makeTable($tweets) {
+function makeTable($tweets, $public = false) {
 	if ( isset($tweets->error) ) {
 		if ( $tweets->error == "Not authorized" ) echo "<em>The tweets from this user are protected and can not be showed.</em>";
 		else echo "<em>Error: ". $tweets->error .".</em>";
@@ -18,7 +18,13 @@ function makeTable($tweets) {
 	foreach ( $tweets as $tweet ) {	
 		echo '<tr><td>';
 
-		if ( isset($tweet->retweeted_status) ) {
+		if ( $public ) {
+			$twText = linkify_tweet($tweet);
+			echo '<img src="'. $tweet->user->profile_image_url . '" />';
+			echo '</td><td class="msgRow"><a class="none" style="color: #999;" href="http://twitter.com/'. $tweet->user->screen_name .'/status/'. $tweet->id .'">'. $tweet->user->name .'</a>:<br />'. $twText .'<br />';
+			$tweetid = $tweet->id;
+		}
+		elseif ( isset($tweet->retweeted_status) ) {
 			$twText = linkify_tweet($tweet);
 			echo '<img src="'. $tweet->retweeted_status->user->profile_image_url . '" />';
 			echo '</td><td class="msgRow"><a class="none" style="color: #999;" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name='. $tweet->retweeted_status->user->screen_name .'\',\'span3\');">'. $tweet->retweeted_status->user->name .'</a> 
@@ -51,18 +57,21 @@ function makeTable($tweets) {
 			echo '<a onclick="loadYT(\''. $url .'\');" data-toggle="modal" href="#imgModal"><img src="http://img.youtube.com/vi/'.$url.'/2.jpg" /></a><br />';
 		}
 		
-		echo '<span class="twToolBox">
-			<a href="#top" onclick="reply(\''. $tweet->user->screen_name .'\',\''. $tweet->id .'\');"><img class="hoverClass" src="/lib/layout/img/icons/reply.png" alt="&raquo; Reply" /></a> ';
-		if ( $tweet->retweeted == 1 || $tweet->retweeted_status->retweeted == 1 )
-			echo '<a onclick="post(\'/lib/twitter/index.php?call=statuses/destroy/'. $tweet->id .',\'\', \'postM\');"><img class="hoverClass" src="/lib/layout/img/icons/retweet_on.png" alt="Retweeted!" /></a> ';
-		else 
-			echo '<a onclick="post(\'/lib/twitter/index.php?call=statuses/retweet/'. $tweetid .'\',\'\', \'postM\');"><img class="hoverClass" src="/lib/layout/img/icons/retweet.png" alt="&raquo; Retweet" /></a> ';
-		if ( $tweet->favorited == 1 || $tweet->retweeted_status->favorited == 1 )
-			echo '<a onclick="post(\'/lib/twitter/index.php?call=favorites/create/'. $tweetid .'\',\'\', \'postM\');"><img class="hoverClass" src="/lib/layout/img/icons/favorite_on.png" alt="Favorited!" /></a> ';
-		else 
-			echo '<a onclick="post(\'/lib/twitter/index.php?call=favorites/destroy/'. $tweetid .'\',\'\', \'postM\');"><img class="hoverClass" src="/lib/layout/img/icons/favorite.png" alt="&raquo; Favorite" /></a> ';
-		echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($tweet->created_at)).'</span>';
-		echo '</span>';
+		if ( $public ) echo '<span style="color: #999;" class="pull-right">'.date("d-m H:i:s O",strtotime($tweet->created_at)).'</span>';
+		else {
+			echo '<span class="twToolBox">
+				<a href="#top" onclick="reply(\''. $tweet->user->screen_name .'\',\''. $tweet->id .'\');"><img class="hoverClass" src="/lib/layout/img/icons/reply.png" alt="&raquo; Reply" /></a> ';
+			if ( $tweet->retweeted == 1 || $tweet->retweeted_status->retweeted == 1 )
+				echo '<a onclick="post(\'/lib/twitter/index.php?call=statuses/destroy/'. $tweet->id .',\'\', \'postM\');"><img class="hoverClass" src="/lib/layout/img/icons/retweet_on.png" alt="Retweeted!" /></a> ';
+			else 
+				echo '<a onclick="post(\'/lib/twitter/index.php?call=statuses/retweet/'. $tweetid .'\',\'\', \'postM\');"><img class="hoverClass" src="/lib/layout/img/icons/retweet.png" alt="&raquo; Retweet" /></a> ';
+			if ( $tweet->favorited == 1 || $tweet->retweeted_status->favorited == 1 )
+				echo '<a onclick="post(\'/lib/twitter/index.php?call=favorites/create/'. $tweetid .'\',\'\', \'postM\');"><img class="hoverClass" src="/lib/layout/img/icons/favorite_on.png" alt="Favorited!" /></a> ';
+			else 
+				echo '<a onclick="post(\'/lib/twitter/index.php?call=favorites/destroy/'. $tweetid .'\',\'\', \'postM\');"><img class="hoverClass" src="/lib/layout/img/icons/favorite.png" alt="&raquo; Favorite" /></a> ';
+			echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($tweet->created_at)).'</span>';
+			echo '</span>';
+		}
 		
 		echo '</td></tr>';
 	}

@@ -199,7 +199,7 @@
       <hr>
 
       <footer>
-        <p>&copy; <a href="http://arrjaan.github.com">Arrjaan</a> 2012</p>
+        <p>&copy; <a href="http://arrjaan.github.com">Arrjaan</a> 2012 - <a href="/changes">Changelog</a></p>
       </footer>
 
     </div> <!-- /container -->
