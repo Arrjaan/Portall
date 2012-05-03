@@ -86,11 +86,12 @@
 			else echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td><td class="msgRow"><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a>:<br />'. $post['message'].'<br />';
 			
 			if ( !empty($post['picture']) ) echo '<a href="'.$post['link'].'" target="_BLANK"><img src="'.$post['picture'].'" /></a><br />';
+			if ( empty($post['likes']['count']) ) $likes = 0;
+			else $likes = $post['likes']['count'];
 			
 			echo '<span class="twToolBox">
-				<a onclick="fbLike(\''.$post['id'].'\');"><img src="/lib/layout/img/like.png" /></a> ';
-			echo '<a onclick="document.getElementById(\'make_comment'.$post['id'].'\').style.display = \'inline\';"><img src="/lib/layout/img/comment.png" /></a>';
-			echo '<span id="make_comment'.$post['id'].'" class="make_comment input-append"><br /><form onsubmit="return false;" class="form-inline"><input class="input input-medium" /><input type="button" value="Comment" onclick="fbComment(\''.$post['id'].'\',this.form);" class="btn"></form></span>';
+				<a onclick="fbLike(\''.$post['id'].'\');"><img src="/lib/layout/img/like.png" /></a> '.$likes.' ';
+			echo '<a onclick="fbShowComments(\''.$post['id'].'\');"><img src="/lib/layout/img/comment.png" /></a> '.$post['comments']['count'];
 			echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($post['created_time'])).'</span>';
 			echo '</span>';
 			
@@ -101,8 +102,45 @@
 					</table>";
 		if ( $_SESSION['debug'] ) print_r($wall);
 	}
+	/* Load Comments */
+	if ( preg_match("/[0-9_]{10,40}\/comments/",$_REQUEST['call']) ) {	
+		$wall = $wall['data'];
+		
+		echo "<h2>Comments</h2>";
+		echo '<table class="table">
+				<thead>
+					<tr>
+						<th>Replies</th>
+					</tr>
+				</thead><tbody>';
+				
+		foreach ( $wall as $post ) {
+			if ( empty($post['message']) ) continue;
+			echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td><td class="msgRow"><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a>:<br />'. $post['message'].'<br />';
+			
+			if ( !empty($post['picture']) ) echo '<a href="'.$post['link'].'" target="_BLANK"><img src="'.$post['picture'].'" /></a><br />';
+			if ( empty($post['likes']['count']) ) $likes = 0;
+			else $likes = $post['likes']['count'];
+			
+			echo '<span class="twToolBox">
+				<a onclick="fbLike(\''.$post['id'].'\');"><img src="/lib/layout/img/like.png" /></a> '.$likes.' ';
+			echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($post['created_time'])).'</span>';
+			echo '</span>';
+			
+			echo '</td></tr>';
+		}
+		
+		echo"</tbody>
+					</table>";
+		
+		$post_id = str_replace("comments","",str_replace("/","",$_REQUEST['call']));
+		echo '<span class="input-append"><form onsubmit="return false;" class="form-inline"><input class="input" /><input type="button" value="Comment" onclick="fbComment(\''.$post_id.'\',this.form);" class="btn"></form></span>';			
+		
+		if ( $_SESSION['debug'] ) print_r($wall);
+		
+	}
 	/* User information */
-	if ( preg_match("/[0-9]{10,20}/",$_REQUEST['call']) ) {	
+	elseif ( preg_match("/[0-9]{10,20}/",$_REQUEST['call']) ) {	
 		$data = json_decode(file_get_contents("https://graph.facebook.com/".$wall['id']."?access_token=".$facebook->getAccessToken()),true);
 		
 		echo "<h2>". $wall['name'] ." <a href=\"#\" onclick=\"reset();\" class=\"close\">&times;</a></h2>";

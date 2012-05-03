@@ -1,7 +1,7 @@
 <?php session_start(); if ( isset($_GET['debug']) ) $_SESSION['debug'] = true; if ( isset($_GET['halt']) ) $_SESSION['debug'] = false; if ( !isset($_SESSION['debug']) ) $_SESSION['debug'] = false; ?>
 <!DOCTYPE html>
-<html lang="en" prefix="og: http://ogp.me/ns/website#">
-  <head>
+<html lang="en">
+  <head prefix="og: http://ogp.me/ns#">
     <meta charset="utf-8">
     <title>Portall</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,8 +28,9 @@
 		
 	<meta property="og:title" content="Portall" />
 	<meta property="og:type" content="website" />
-	<meta property="og:url" content="http://portall.eu5.org" />
-	<meta property="og:image" content="" />
+	<meta property="og:description" content="Social networking reinvented." />
+	<meta property="og:url" content="http://portall.eu5.org/" />
+	<meta property="og:image" content="http://portall.eu5.org/lib/layout/img/Portall_square.png" />
 	<meta property="og:site_name" content="Portall" />
 	<meta property="fb:admins" content="100001015806976" />
   </head>
