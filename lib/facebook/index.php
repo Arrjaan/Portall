@@ -82,14 +82,15 @@
 				
 		foreach ( $wall as $post ) {
 			if ( empty($post['message']) ) continue;
-			if ( isset($post['to']['data'][0]['name']) ) echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td><td><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a> <i class="icon-chevron-right"></i> <a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['to']['data'][0]['id'].'\',\'span3\');">'. $post['to']['data'][0]['name'] .'</a>:<br />'. $post['message'].'<br />';
+			if ( isset($post['to']['data'][0]['name']) ) echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td><td class="msgRow"><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a> <i class="icon-chevron-right"></i> <a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['to']['data'][0]['id'].'\',\'span3\');">'. $post['to']['data'][0]['name'] .'</a>:<br />'. $post['message'].'<br />';
 			else echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td><td class="msgRow"><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a>:<br />'. $post['message'].'<br />';
 			
 			if ( !empty($post['picture']) ) echo '<a href="'.$post['link'].'" target="_BLANK"><img src="'.$post['picture'].'" /></a><br />';
 			
 			echo '<span class="twToolBox">
-				<a href="#top1"><i class="icon-comment"></i></a> ';
-			echo '<a href="#top2"><i class="icon-thumbs"></i></a> ';
+				<a onclick="fbLike(\''.$post['id'].'\');"><img src="/lib/layout/img/like.png" /></a> ';
+			echo '<a onclick="document.getElementById(\'make_comment'.$post['id'].'\').style.display = \'inline\';"><img src="/lib/layout/img/comment.png" /></a>';
+			echo '<span id="make_comment'.$post['id'].'" class="make_comment input-append"><br /><form onsubmit="return false;" class="form-inline"><input class="input input-medium" /><input type="button" value="Comment" onclick="fbComment(\''.$post['id'].'\',this.form);" class="btn"></form></span>';
 			echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($post['created_time'])).'</span>';
 			echo '</span>';
 			
