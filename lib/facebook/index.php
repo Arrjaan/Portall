@@ -19,7 +19,6 @@
 	
 	if ( $user && !isset($_GET['call']) ) {
 		$user_profile = $facebook->api('/me','GET');
-		$db = new Mysqli($db['server'],$db['user'],$db['pass'],$db['db'],$db['port']);
 		
 		if ( !empty($_SESSION['userid']) && !empty($_SESSION['session']) ) {
 			$q = $db->query("select * from `users` where `session` = '".$_SESSION['session']."' and `id` = '".$_SESSION['userid']."'");

@@ -26,9 +26,14 @@ if ( !empty($_POST['email']) ) {
 
 switch ($page[2]) {
 	case "home":
-		$page_title = "Welcome!";
+		$page_title = "Settings";
 		$type = "home";
-		$content = ':)<br />';
+		$content = 
+		'<p>
+			<ul class="unstyled">
+				<li><a href="timezone">&raquo; Set Timezone</a></li>
+			</ul>
+		</p>';
 	break;
 	case "verify":
 		$page_title = "Welcome!";

@@ -38,7 +38,6 @@ unset($_SESSION['oauth_token_secret']);
 /* If HTTP response is 200 continue otherwise send to connect page to retry */
 if (200 == $connection->http_code) {
 	/* The user has been verified and the access tokens can be saved for future use */
-	$db = new Mysqli($db['server'],$db['user'],$db['pass'],$db['db'],$db['port']);
 	$conn = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token['oauth_token'], $access_token['oauth_token_secret']);
 
 	if ($db->connect_errno) {

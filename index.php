@@ -4,7 +4,6 @@ require('config.SECURE.inc.php');
 
 session_start();
 if ( isset($_GET['clear']) ) { session_destroy(); session_start(); }
-$db = new Mysqli($db['server'],$db['user'],$db['pass'],$db['db'],$db['port']);
 
 // Restore Login and token sessions.
 if ( !empty($_SESSION['userid']) && !empty($_SESSION['session']) ) {
@@ -43,6 +42,12 @@ if ( !empty($_COOKIE['portall_session']) ) {
 		setcookie("portall_session", "", time()-3600,'/','portall.eu5.org');
 	}
 }
+
+/* Load Preferences */
+$q = $db->query("select * from `prefs` where `id` = '".$_SESSION['userid']."'");
+$prefs = $q->fetch_assoc();
+
+if ( !empty($prefs['timezone']) ) date_default_timezone_set($prefs['timezone']);
 
 @$page = explode("/",$_SERVER['PATH_INFO']);
 if ( empty($page[1]) ) $page[1] = "index";
