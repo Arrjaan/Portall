@@ -1,4 +1,4 @@
 <?php
 	$type = "home";
-	$content = "<p>Pagina niet gevonden.</p>";
+	$content = "<p>Page not found.</p>";
 ?>
