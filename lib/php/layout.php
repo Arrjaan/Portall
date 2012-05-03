@@ -113,6 +113,7 @@
 				<li><a href="/notify">Notifications</a></li>
             </ul>
 			<ul class="nav pull-right">
+				<li><a href="/settings">Settings</a></li>
 				<?php if ( $_SESSION['userid'] == '1' ) echo '<li><a href="/admin">Administration</a></li>'; ?>
 				<li class="dropdown" id="menu1">
 					<a class="dropdown-toggle" data-toggle="dropdown" href="#menu1">Debug <b class="caret"></b></a>
@@ -152,7 +153,7 @@
 	<?php } ?>
 	<?php if ( $type == "home" ) { ?>
       <div class="hero-unit">
-        <h1>Portall</h1>
+        <h1><?php if ( empty($page_title) ) $page_title = "Portall"; echo $page_title; ?></h1>
         <?php echo $content; ?>
       </div>
 	<?php } else { ?>
