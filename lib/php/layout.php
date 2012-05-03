@@ -122,7 +122,7 @@
 						<li><a href="?clear">Clear all sessions</a></li>
 					</ul>
 				</li>
-				<li><a href="/lib/twitter/clearsessions.php?logout">Logout</a></li>
+				<li><a href="/logout">Logout</a></li>
             </ul>
           </div>
         </div>
@@ -176,7 +176,7 @@
 					if ( $page[1] == "notify" ) echo '<botton class="btn btn-primary" onclick="ajax(\'/lib/twitter/index.php?call=statuses/mentions\', \'span1\')">Laad Tweets</botton>';
 				}
 				else 
-					echo '<a href="/lib/twitter/clearsessions.php"><img src="/lib/layout/img/twitter.png" alt="Sign in with Twitter" /></a>';
+					echo '<a href="/login/twitter"><img src="/lib/layout/img/twitter.png" alt="Sign in with Twitter" /></a>';
 			?>
 		</div>
 		<a id="fb"></a>
@@ -188,7 +188,7 @@
 					if ( $page[1] == "notify" ) echo '<botton class="btn btn-primary" onclick="ajax(\'/lib/facebook/index.php?call=/me/home\', \'span2\')">Laad Posts</botton>';
 				}
 				else 
-					echo '<a href="/lib/facebook/index.php?action=auth"><img src="/lib/layout/img/facebook.png" alt="Sign in with Facebook" /></a>';		
+					echo '<a href="/login/facebook"><img src="/lib/layout/img/facebook.png" alt="Sign in with Facebook" /></a>';		
 			?>
 		</div>
 		<a id="ui"></a>
