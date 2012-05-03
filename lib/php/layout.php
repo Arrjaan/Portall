@@ -26,10 +26,12 @@
 	<script src="/lib/js/jquery.js"></script>
 	<script src="/lib/js/ajax.js"></script>
 		
-	<meta property="og:title" content="Portall">
-	<meta property="og:type" content="website">
-	<meta property="og:url" content="http://portall.eu5.org/">
-	<meta property="og:image" content="http://ia.media-imdb.com/images/rock.jpg">
+	<meta property="og:title" content="Portall" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="http://portall.eu5.org" />
+	<meta property="og:image" content="" />
+	<meta property="og:site_name" content="Portall" />
+	<meta property="fb:admins" content="100001015806976" />
   </head>
 
   <body data-spy="scroll" data-target=".subnav" data-offset="50">
