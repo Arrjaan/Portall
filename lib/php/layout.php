@@ -142,8 +142,8 @@
 		</div>
 		</header>
 		<audio id="sound">
-			<source src="/lib/sound/song.ogg" type="audio/ogg" />
-			<source src="/lib/sound/song.mp3" type="audio/mpeg" />
+			<source src="/lib/sound/alert.ogg" type="audio/ogg" />
+			<source src="/lib/sound/alert.mp3" type="audio/mpeg" />
 			<center>Your browser does not support <a class="initialism" title="The newest method to display a webpage." href="http://en.wikipedia.org/wiki/HTML5">HTML5</a>. Why not <a href="http://browsehappy.com">&raquo; upgrade your browser</a>?</center><br /><br />
 		</audio>
 	<?php if ( $_SESSION['debug'] ) { echo "SESSIONS:<br />"; print_r($_SESSION); echo "<br /><br />COOKIES:<br />"; print_r($_COOKIE); echo "<br /><br />"; ?>
