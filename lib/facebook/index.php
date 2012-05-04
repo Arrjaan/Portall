@@ -105,7 +105,7 @@
 	if ( preg_match("/[0-9_]{10,40}\/comments/",$_REQUEST['call']) ) {	
 		$wall = $wall['data'];
 		
-		echo "<h2>Comments</h2>";
+		echo "<h2>Comments <a href=\"#\" onclick=\"reset();\" class=\"close\">&times;</a></h2>";
 		echo '<table class="table">
 				<thead>
 					<tr>
