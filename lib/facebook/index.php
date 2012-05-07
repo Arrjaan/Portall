@@ -2,6 +2,7 @@
 	session_start(); 
 	
 	require 'facebook.php';
+	require 'function.php';
 	require 'config.SECURE.php';
 	require_once('../../config.SECURE.inc.php');
 
@@ -71,74 +72,18 @@
 		$wall = $facebook->api('/me/home','GET');
         $wall = $wall['data'];
 		
-		echo "<h2>Facebook</h2>";
-		echo '<table class="table">
-				<thead>
-					<tr>
-						<th>Posts</th>
-					</tr>
-				</thead><tbody>';
-				
-		foreach ( $wall as $post ) {
-			if ( empty($post['message']) ) continue;
-			if ( isset($post['to']['data'][0]['name']) ) echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td><td class="msgRow"><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a> <i class="icon-chevron-right"></i> <a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['to']['data'][0]['id'].'\',\'span3\');">'. $post['to']['data'][0]['name'] .'</a>:<br />'. $post['message'].'<br />';
-			else echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td><td class="msgRow"><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a>:<br />'. $post['message'].'<br />';
-			
-			if ( !empty($post['picture']) ) echo '<a href="'.$post['link'].'" target="_BLANK"><img src="/thumb/'.base64_encode($post['picture']).'" /></a><br />';
-			//if ( !empty($post['picture']) ) echo '<a href="'.$post['link'].'" target="_BLANK"><img src="'.$post['picture'].'" /></a><br />';
-			if ( empty($post['likes']['count']) ) $likes = 0;
-			else $likes = $post['likes']['count'];
-			
-			echo '<span class="twToolBox">
-				<a onclick="fbLike(\''.$post['id'].'\');"><img src="/lib/layout/img/like.png" /></a> '.$likes.' ';
-			echo '<a onclick="fbShowComments(\''.$post['id'].'\');"><img src="/lib/layout/img/comment.png" /></a> '.$post['comments']['count'];
-			echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($post['created_time'])).'</span>';
-			echo '</span>';
-			
-			echo '</td></tr>';
-		}
-		
-		echo"</tbody>
-					</table>";
-		if ( $_SESSION['debug'] ) print_r($wall);
+		makeFBTable($wall);
 	}
 	/* Load Comments */
 	if ( preg_match("/[0-9_]{10,40}\/comments/",$_REQUEST['call']) ) {	
 		$wall = $wall['data'];
 		
-		echo "<h2>Comments <a href=\"#\" onclick=\"reset();\" class=\"close\">&times;</a></h2>";
-		echo '<table class="table">
-				<thead>
-					<tr>
-						<th>Replies</th>
-					</tr>
-				</thead><tbody>';
-				
-		foreach ( $wall as $post ) {
-			if ( empty($post['message']) ) continue;
-			echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td><td class="msgRow"><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a>:<br />'. $post['message'].'<br />';
-			
-			if ( !empty($post['picture']) ) echo '<a href="'.$post['link'].'" target="_BLANK"><img src="/thumb/'.base64_encode($post['picture']).'" /></a><br />';
-			//if ( !empty($post['picture']) ) echo '<a href="'.$post['link'].'" target="_BLANK"><img src="'.$post['picture'].'" /></a><br />';
-			if ( empty($post['likes']['count']) ) $likes = 0;
-			else $likes = $post['likes']['count'];
-			
-			echo '<span class="twToolBox">
-				<a onclick="fbLike(\''.$post['id'].'\');"><img src="/lib/layout/img/like.png" /></a> '.$likes.' ';
-			echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($post['created_time'])).'</span>';
-			echo '</span>';
-			
-			echo '</td></tr>';
-		}
-		
-		echo"</tbody>
-					</table>";
+		makeFBTable($wall, "Comments <a href=\"#\" onclick=\"reset();\" class=\"close\">&times;</a>", "Replies"); 
 		
 		$post_id = str_replace("comments","",str_replace("/","",$_REQUEST['call']));
 		echo '<span class="input-append"><form onsubmit="return false;" class="form-inline"><input class="input" /><input type="button" value="Comment" onclick="fbComment(\''.$post_id.'\',this.form);" class="btn"></form></span>';			
 		
 		if ( $_SESSION['debug'] ) print_r($wall);
-		
 	}
 	/* User information */
 	elseif ( preg_match("/[0-9]{10,20}/",$_REQUEST['call']) ) {	
@@ -154,29 +99,10 @@
 		if ( !empty($data['relationship_status']) ) echo 'Relationship status: '.$data['relationship_status'].'<br />';
 		
 		echo '</td></tr></table>';
-		
-		echo '<table class="table">
-				<thead>
-					<tr>
-						<th>Posts</th>
-					</tr>
-				</thead><tbody>';
 				
 		$posts = $facebook->api('/'.$wall['id'].'/feed','GET');
 		$posts = $posts["data"];
 		
-		foreach ( $posts as $post ) {
-			if ( empty($post['message']) ) continue;
-			echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td><td><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a>:<br />'. $post['message'].'<br />';
-			
-			if ( !empty($post['picture']) ) echo '<a href="'.$post['link'].'" target="_BLANK"><img src="/thumb/'.base64_encode($post['picture']).'" /></a><br />';
-			//if ( !empty($post['picture']) ) echo '<a href="'.$post['link'].'" target="_BLANK"><img src="'.$post['picture'].'" /></a><br />';
-			
-			echo '</td></tr>';
-		}
-		
-		echo"</tbody>
-					</table>";	
-		if ( $_SESSION['debug'] ) print_r($data);
+		makeFBTable($posts); 
 	}
 ?>
