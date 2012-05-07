@@ -60,7 +60,8 @@ function makeTable($tweets, $public = false) {
 			echo '<a onclick="loadYT(\''. $url .'\');" data-toggle="modal" href="#imgModal"><img src="http://img.youtube.com/vi/'.$url.'/2.jpg" /></a><br />';
 		}
 		elseif ( preg_match("/youtu\.be\//",$tweet->entities->urls[0]->expanded_url) ) {
-			$url = explode("/",$tweet->entities->urls[0]->expanded_url);
+			$url = preg_replace("/https?\:\/\//","",$tweet->entities->urls[0]->expanded_url);
+			$url = explode("/",$url);
 			if ( preg_match("/&/", $url[1]) ) {
 				$url = explode("&",$url[1]);
 				$url = $url[0];
