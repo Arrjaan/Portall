@@ -113,7 +113,7 @@
 				<li><a href="/notify">Notifications</a></li>
             </ul>
 			<ul class="nav pull-right">
-				<li><a href="/settings">Settings</a></li>
+				<?php if ( !empty($_SESSION['userid']) ) echo '<li><a href="/settings">Settings</a></li>'; ?>
 				<?php if ( $_SESSION['userid'] == '1' ) echo '<li><a href="/admin">Administration</a></li>'; ?>
 				<li class="dropdown" id="menu1">
 					<a class="dropdown-toggle" data-toggle="dropdown" href="#menu1">Debug <b class="caret"></b></a>
