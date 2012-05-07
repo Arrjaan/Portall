@@ -28,8 +28,8 @@ function makeFBTable($wall, $title = "Facebook", $type = "Posts") {
 		}
 		else echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td><td class="msgRow"><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a>:<br />'.linkify($post).'<br />';
 			
-		if ( preg_match("/youtube\.com\/watch\?v/", $post['link']) ) {
-			$url = explode("=",$post['link']);
+		if ( preg_match("/youtube\.com\/watch/", $post['link']) ) {
+			$url = explode("v=",$post['link']);
 			if ( preg_match("/&/", $url[1]) ) {
 				$url = explode("&",$url[1]);
 				$url = $url[0];

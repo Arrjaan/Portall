@@ -50,8 +50,8 @@ function makeTable($tweets, $public = false) {
 			$code = explode("/",$tweet->entities->urls[0]->display_url);
 			echo '<a onclick="loadIMG(\'yfrog\',\'http://yfrog.com/'.$code[1].':medium\');" data-toggle="modal" href="#imgModal"><img src="http://yfrog.com/'.$code[1].':small" /></a><br />';
 		}
-		elseif ( preg_match("/youtube\.com\/watch\?v/",$tweet->entities->urls[0]->expanded_url) ) {
-			$url = explode("=",$tweet->entities->urls[0]->expanded_url);
+		elseif ( preg_match("/youtube\.com\/watch/",$tweet->entities->urls[0]->expanded_url) ) {
+			$url = explode("v=",$tweet->entities->urls[0]->expanded_url);
 			if ( preg_match("/&/", $url[1]) ) {
 				$url = explode("&",$url[1]);
 				$url = $url[0];
@@ -69,7 +69,7 @@ function makeTable($tweets, $public = false) {
 			else $url = $url[1];
 			echo '<a onclick="loadYT(\''. $url .'\');" data-toggle="modal" href="#imgModal"><img src="http://img.youtube.com/vi/'.$url.'/2.jpg" /></a><br />';
 		}
-		
+
 		if ( $public ) echo '<span style="color: #999;" class="pull-right">'.date("d-m H:i:s O",strtotime($tweet->created_at)).'</span>';
 		else {
 			echo '<span class="twToolBox">
