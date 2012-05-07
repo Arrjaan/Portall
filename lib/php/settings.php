@@ -1,4 +1,5 @@
 <?php
+require('functions.php');
 
 if ( !$_SESSION['userid'] ) {
 	header('Location: /');
@@ -47,7 +48,7 @@ switch ($page[2]) {
 	case "timezone":
 		$type = "home";
 		$content = '<p>It\'s time to set your timezone!</p>
-			<form method="post" class="form-inline">
+			<form method="post">
 				<select onchange="setRegion(this.value)">
 					<option value="0">Africa</option>
 					<option value="1">America</option>
@@ -58,14 +59,33 @@ switch ($page[2]) {
 					<option value="6">Indian</option>
 					<option value="7">Pacific</option>
 				</select>
-				<br /><br />
+				<br />
 				<select placeholder="Select a region first." name="tz" id="tz">
 					<option>Select a region first.</option>
 				</select>
-				<br /><br />
-				<button type="submit" class="btn btn-primary">Submit</button> 
+			<br />
+			<label>Time display format</label>
+			<select name="display_timezone">
+				<option onclick="document.getElementById(\'customtz\').style.display = \'none\'; document.getElementById(\'customtz\').value = \'\';" value="relative">Relative</option>
+				<option onclick="document.getElementById(\'customtz\').style.display = \'none\'; document.getElementById(\'customtz\').value = \'\';" value="absolute">Absolute</option>
+				<option onclick="document.getElementById(\'customtz\').style.display = \'inline\';" value="">Custom</option>
+			</select>
+			<br />
+			<div id="customtz" style="display: none;">
+				<label>Custom time display format - see <a href="http://php.net/manual/en/function.date.php" target="_BLANK">the PHP manual</a> for more information.</label>
+				<input placeholder="d-m H:i:s O" name="customtz">
+				<br />
+			</div>
+			<div class="well">
+				<strong>Example</strong><br />';
+			if ( $prefs['display_time'] == "relative" ) $content .= timetostr(time());
+			if ( $prefs['display_time'] == "absolute" ) $content .= date("d-m H:i:s O",time());
+			if ( $prefs['display_time'] !== "relative" && $prefs['display_time'] !== "absolute" ) $content .= date($prefs['display_time'],time());
+			$content .= '<br />
+			</div>
+			<button type="submit" class="btn btn-primary">Submit</button> 
 			<a href="/settings" class="btn">Back</a>
-			</form><script>setRegion(0)</script>';
+		</form><script>setRegion(0)</script>';
 	break;
 	case "getTimezone":
 		static $regions = array(
@@ -120,37 +140,18 @@ if ( !empty($_POST['email_confirm']) ) {
 	}
 }
 
-if ( !empty($_POST['tz']) ) {
+if ( !empty($_POST['tz']) && isset($_POST['display_timezone']) && isset($_POST['customtz']) ) {
+	if ( $_POST['customtz'] !== "" ) $tz = $_POST['customtz'];
+	else $tz = $_POST['display_timezone'];
+	
 	$q = $db->query("select * from `prefs` where `id` = '".$_SESSION['userid']."'");
 	
-	if ( $q->num_rows > 0 ) $db->query("update `prefs` set `timezone` = '".$_POST['tz']."' where `id` = '".$_SESSION['userid']."'");
-	else $db->query("insert into `prefs` (`id`,`timezone`) values ('".$_SESSION['userid']."','".$_POST['tz']."')");
+	if ( $q->num_rows > 0 ) $db->query("update `prefs` set `timezone` = '".$_POST['tz']."', `display_time` = '".$tz."' where `id` = '".$_SESSION['userid']."'");
+	else $db->query("insert into `prefs` (`id`,`timezone`,`display_time`) values ('".$_SESSION['userid']."','".$_POST['tz']."','".$tz."')");
 	
-	$type = "home";
-	$content = '<p>It\'s time to set your timezone!</p>
-		<form method="post" class="form-inline">
-			<div class="alert alert-success alert-block"> 
-				<!-- <a class="close" data-dismiss="alert" href="#">&times;</a>-->
-				Timezone altered. :)
-			</div>
-			<select onchange="setRegion(this.value)">
-				<option value="0">Africa</option>
-				<option value="1">America</option>
-				<option value="2">Antartica</option>
-				<option value="3">Asia</option>
-				<option value="4">Atlantic</option>
-				<option value="5">Europe</option>
-				<option value="6">Indian</option>
-				<option value="7">Pacific</option>
-			</select>
-			<br /><br />
-			<select placeholder="Select a region first." name="tz" id="tz">
-				<option>Select a region first.</option>
-			</select>
-			<br /><br />
-			<button type="submit" class="btn btn-primary">Submit</button> 
-			<a href="/settings" class="btn">Back</a>
-		</form><script>setRegion(0)</script>';
+	if ( $_SESSION['debug'] ) print_r($_POST);
+	
+	header("Location: /settings/timezone");
 }
 ?>
 

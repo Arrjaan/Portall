@@ -2,9 +2,10 @@
 	session_start(); 
 	
 	require 'facebook.php';
-	require 'function.php';
 	require 'config.SECURE.php';
 	require_once('../../config.SECURE.inc.php');
+	require_once('../../functions.php');
+	require 'function.php';
 
 	$facebook = new Facebook(array(
 	  'appId'  => CONSUMER_KEY,

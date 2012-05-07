@@ -1,6 +1,8 @@
 <?php
 
 function makeTable($tweets, $public = false) {
+	global $prefs;
+	
 	if ( isset($tweets->error) ) {
 		if ( $tweets->error == "Not authorized" ) echo "<em>The tweets from this user are protected and can not be showed.</em>";
 		else echo "<em>Error: ". $tweets->error .".</em>";
@@ -82,7 +84,9 @@ function makeTable($tweets, $public = false) {
 				echo '<a onclick="post(\'/lib/twitter/index.php?call=favorites/create/'. $tweetid .'\',\'\', \'postM\');"><img class="hoverClass" src="/lib/layout/img/icons/favorite_on.png" alt="Favorited!" /></a> ';
 			else 
 				echo '<a onclick="post(\'/lib/twitter/index.php?call=favorites/destroy/'. $tweetid .'\',\'\', \'postM\');"><img class="hoverClass" src="/lib/layout/img/icons/favorite.png" alt="&raquo; Favorite" /></a> ';
-			echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($tweet->created_at)).'</span>';
+			if ( $prefs['display_time'] == "relative" ) echo '<span class="pull-right">'.timetostr(strtotime($tweet->created_at)).'</span>';
+			if ( $prefs['display_time'] == "absolute" ) echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($tweet->created_at)).'</span>';
+			if ( $prefs['display_time'] !== "relative" && $prefs['display_time'] !== "absolute" ) echo '<span class="pull-right">'.date($prefs['display_time'],strtotime($tweet->created_at)).'</span>';
 			echo '</span>';
 		}
 		

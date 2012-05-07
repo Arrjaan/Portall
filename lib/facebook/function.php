@@ -1,6 +1,8 @@
 <?php
 
 function makeFBTable($wall, $title = "Facebook", $type = "Posts") {	
+	global $prefs;
+	
 	echo "<h2>".$title."</h2>";
 	echo '<table class="table">
 			<thead>
@@ -57,7 +59,11 @@ function makeFBTable($wall, $title = "Facebook", $type = "Posts") {
 		echo '<span class="twToolBox">
 			<a onclick="fbLike(\''.$post['id'].'\');"><img src="/lib/layout/img/like.png" /></a> '.$likes.' ';
 		echo '<a onclick="fbShowComments(\''.$post['id'].'\');"><img src="/lib/layout/img/comment.png" /></a> '.$post['comments']['count'];
-		echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($post['created_time'])).'</span>';
+		
+		if ( $prefs['display_time'] == "relative" ) echo '<span class="pull-right">'.timetostr(strtotime($post['created_time'])).'</span>';
+		if ( $prefs['display_time'] == "absolute" ) echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($post['created_time'])).'</span>';
+		if ( $prefs['display_time'] !== "relative" && $prefs['display_time'] !== "absolute" ) echo '<span class="pull-right">'.date($prefs['display_time'],strtotime($post['created_time'])).'</span>';
+		
 		echo '</span>';
 		
 		echo '</td></tr>';
