@@ -21,8 +21,9 @@ function makeFBTable($wall, $title = "Facebook", $type = "Posts") {
 			}
 			
 			$users = substr($users, 0, -2);
+			$users = preg_replace("/\, ([a-zA-Z ]*)$/i"," and $1", $users);
 			
-			if ( isset($post['to']['data'][1]['name']) ) echo ' and <a tyle="color: #999;" href="#" id="tt" rel="tooltip" title="'.$users.'">'. $cnt .' others:</a><br />'. $post['message'].'<br />';
+			if ( isset($post['to']['data'][1]['name']) ) echo ' and <a style="color: #999;" href="#" id="tt" rel="tooltip" title="'.$users.'">'. $cnt .' others</a>:<br />'. $post['message'].'<br />';
 			else echo ':<br />'. $post['message'].'<br />';
 		}
 		else echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td><td class="msgRow"><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a>:<br />'. $post['message'].'<br />';
