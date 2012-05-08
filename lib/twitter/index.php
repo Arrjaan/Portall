@@ -31,6 +31,23 @@ if ( $_SERVER['REQUEST_METHOD'] == "GET" && isset($_REQUEST['call']) )
 if ( $_SERVER['REQUEST_METHOD'] == "POST" & isset($_REQUEST['call']) ) {	
 	$tweets = $connection->post($_REQUEST['call'], $_POST);
 }
+if ( isset($_REQUEST['call']) ) {
+	$x = $connection->headers;
+	$x = explode("\n",$x);
+	
+	foreach ( $x as $header ) {
+		$y = explode(": ",$header);
+		if ( $y[0] == "X-RateLimit-Remaining") $_SESSION['limit'] = $y[1];
+		if ( $y[0] == "X-RateLimit-Reset" ) $_SESSION['limit_reset'] = $y[1];
+	}
+}
+if ( isset($_REQUEST['hdrs']) ) {
+	$connection->get("statuses/home_timeline");
+	$x = $connection->headers;
+	$x = explode("\n",$x);
+	print_r($x);
+	die();
+}
 
 /* Return status code when tweeting, retweeting or favoriting. */
 if ( $_REQUEST['call'] == "statuses/update" ) echo $connection->http_code;

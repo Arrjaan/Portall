@@ -108,8 +108,11 @@
           <div class="nav-collapse">
             <ul class="nav">
 				<li><a href="/home">Home</a></li>
-				<li><a href="/notify">Notifications</a></li>
+				<li><a href="/notify">Notifications</a></li>		
             </ul>
+			<form class="navbar-search pull-left" action="#" onsubmit="alert(this.form.getElementsByTagName('input')[0].value);">
+				<input class="search-query span2" placeholder="Search" type="text">
+			</form>
 			<ul class="nav pull-right">
 				<?php if ( !empty($_SESSION['userid']) ) echo '<li><a href="/settings">Settings</a></li>'; ?>
 				<?php if ( $_SESSION['userid'] == '1' ) echo '<li><a href="/admin">Administration</a></li>'; ?>
@@ -128,8 +131,6 @@
         </div>
       </div>
     </div>
-
-	<span id="quene" rel="tooltip" data-placement="left" title="Amount of AJAX calls in quene." class="badge pull-right tt" onclick="this.innerHTML = quene.length;">3</span>
 	
     <div class="container" id="content">
 		<audio id="sound">
@@ -148,11 +149,14 @@
         <?php echo $content; ?>
       </div>
 	<?php } else { ?>
+	<span id="ratelimit" rel="tooltip" data-placement="right" title="Amount of remaining available Twitter-API calls till <?php echo date("H:i:s",$_SESSION['limit_reset']); ?>." class="badge pull-left tt <?php echo limitStatus(); ?>" onclick="ajax('/data/session/limit','ratelimit')"><?php echo $_SESSION['limit']; ?></span>
+	<span id="quene" rel="tooltip" data-placement="left" title="Amount of AJAX calls in quene." class="badge pull-right tt" onclick="this.innerHTML = quene.length;">3</span>
+	
 	<form onsubmit="status();return false;" style="text-align: center;" >
 		<div id="postM" class="control-group">
 			<div class="controls">
 				<label id="postPrefs">Twitter <a onclick="setStatus('Twitter', 'false');"><i class="icon-ok"></i></a> | Facebook <a onclick="setStatus('Facebook', 'true');"><i class="icon-remove"></i></a></label>
-				<textarea onkeyup="count(this.value)" class="input-xlarge span6" id="nTweet" rows="1"></textarea><br />
+				<textarea data-provide="typeahead" onkeyup="count(this.value)" class="input-xlarge span6 typeahead" id="nTweet" rows="1"></textarea><br />
 				<a href="#upld" data-toggle="modal" class="btn"><i class="icon-camera"></i></a>  
 				<button type="button" onclick="status();" class="btn btn-primary">Send!</button>
 				<!-- <input size="150" onkeyup="count(this.value)" type="text" id="nTweet" class="input-xlarge search-query"/> -->
@@ -273,7 +277,17 @@
 			tabid = tabid[1];
 			tabid = "#"+tabid;
 			$(tabid).css("display","inline");
-		})
+		});
+		/*
+		$('.typeahead').typeahead({
+			source: ["@Arrjaan"],
+			matcher: function(item) {
+				var regex = /\@/;
+				if ( regex.test(this.query) ) { return true; }
+				else { return false; }
+			}
+		});
+		*/
 	</script>
 </body>
 </html>

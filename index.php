@@ -1,6 +1,7 @@
 <?php
 
 require('config.SECURE.inc.php');
+require('functions.php');
 
 session_start();
 if ( isset($_GET['clear']) ) { session_destroy(); session_start(); }

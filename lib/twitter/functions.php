@@ -113,6 +113,14 @@ function get_page_title($url){
 function linkify_tweet($twdata) {
 	if ( !empty($twdata->retweeted_status->text) ) $tweet = $twdata->retweeted_status->text;
 	else $tweet = $twdata->text;
+	
+	$wordwrap = explode(" ",$tweet);
+	$tweet = '';
+	
+	foreach ( $wordwrap as $word ) {
+		if ( strlen($word) > 40 && !preg_match("/https?\:\/\//",$word) ) $tweet .= wordwrap($word, 40, '<br>', true)." ";
+		else $tweet .= $word." ";
+	}
 
 	$tweet = str_replace($twdata->entities->urls[0]->url,
         '<a onclick="loadIFrame(\''. str_replace("https","http",$twdata->entities->urls[0]->url) .'\');" data-toggle="modal" href="#mdl">'. $twdata->entities->urls[0]->display_url .'</a>',

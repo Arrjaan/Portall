@@ -15,6 +15,8 @@ require_once('OAuth.php');
 class TwitterOAuth {
   /* Contains the last HTTP status code returned. */
   public $http_code;
+  /* Contains the last headers returned. */
+  public $headers;
   /* Contains the last API call. */
   public $url;
   /* Set up the API root URL. */
@@ -205,7 +207,7 @@ class TwitterOAuth {
     curl_setopt($ci, CURLOPT_HTTPHEADER, array('Expect:'));
     curl_setopt($ci, CURLOPT_SSL_VERIFYPEER, $this->ssl_verifypeer);
     curl_setopt($ci, CURLOPT_HEADERFUNCTION, array($this, 'getHeader'));
-    curl_setopt($ci, CURLOPT_HEADER, FALSE);
+    curl_setopt($ci, CURLOPT_HEADER, TRUE);
 
     switch ($method) {
       case 'POST':
@@ -223,11 +225,14 @@ class TwitterOAuth {
 
     curl_setopt($ci, CURLOPT_URL, $url);
     $response = curl_exec($ci);
+	list($header, $body) = explode("\r\n\r\n", $response, 2);  
+	
     $this->http_code = curl_getinfo($ci, CURLINFO_HTTP_CODE);
     $this->http_info = array_merge($this->http_info, curl_getinfo($ci));
     $this->url = $url;
+	$this->headers = $header;
     curl_close ($ci);
-    return $response;
+    return $body;
   }
 
   /**

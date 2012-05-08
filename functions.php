@@ -1,5 +1,12 @@
 <?php
 
+function limitStatus() {
+	if ( $_SESSION['limit'] > 299 ) return "badge-success";
+	if ( $_SESSION['limit'] > 149 ) return "badge-info";
+	if ( $_SESSION['limit'] > 99 ) return "badge-warning";
+	if ( $_SESSION['limit'] < 51 ) return "badge-important";
+}
+
 function timetostr($time) {
 
     $time_difference = time() - $time ;
