@@ -107,7 +107,7 @@ header('Content-type: image/jpeg');
 
 $image = new SimpleImage;
 $image->load(base64_decode($page[2]));
-$image->resizeToWidth(150);
+if ( $image->getWidth() > 150 ) $image->resizeToWidth(150);
 $image->output();
 
 die();

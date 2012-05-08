@@ -1,6 +1,6 @@
 RewriteEngine on
 
-RewriteCond $1 !^(index\.php|lib|robots\.txt)
+RewriteCond $1 !^(index\.php|lib|files|robots\.txt)
 RewriteRule ^(.*)$ /index.php/$1 [L]
 
 ErrorDocument 404 /notfound
