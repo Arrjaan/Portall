@@ -1,6 +1,4 @@
 <?php
-require('functions.php');
-
 if ( !$_SESSION['userid'] ) {
 	header('Location: /');
 	die();
@@ -47,8 +45,11 @@ switch ($page[2]) {
 	break;
 	case "timezone":
 		$type = "home";
-		$content = '<p>It\'s time to set your timezone!</p>
-			<form method="post">
+		$content = '<p>It\'s time to set your timezone!</p>';
+		
+		if ( $page[3] == "success" ) $content .= '<div class="alert alert-success">Settings saved! (:</div>';
+		
+		$content .=	'<form method="post">
 				<select onchange="setRegion(this.value)">
 					<option value="0">Africa</option>
 					<option value="1">America</option>
@@ -151,7 +152,7 @@ if ( !empty($_POST['tz']) && isset($_POST['display_timezone']) && isset($_POST['
 	
 	if ( $_SESSION['debug'] ) print_r($_POST);
 	
-	header("Location: /settings/timezone");
+	header("Location: /settings/timezone/success");
 }
 ?>
 
