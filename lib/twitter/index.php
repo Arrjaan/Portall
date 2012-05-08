@@ -64,7 +64,7 @@ if ( $_REQUEST['call'] == "users/lookup" || isset($lookup) ) {
 	$connection->get("users/profile_image/".$tweets[0]->screen_name, array("size" => "original"));
 	$original = $connection->http_info['redirect_url'];
 	
-	echo '<table class="table"><tr><td><a onclick="loadIMG(\'' .$tweets[0]->name. '\',\''.$original.'\');" data-toggle="modal" href="#imgModal"><img src="'. $bigger .'" /></a></td><td>';
+	echo '<table class="table"><tr><td><a onclick="loadIMG(\'' .$tweets[0]->name. '\',\''.$original.'\');" data-toggle="modal" href="#mdl"><img src="'. $bigger .'" /></a></td><td>';
 	
 	echo "<strong>". $tweets[0]->name ."</strong> @".$tweets[0]->screen_name ."<br />";
 	echo "Bio: <em>".$tweets[0]->description ."</em><br />";

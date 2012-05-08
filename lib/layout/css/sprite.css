@@ -24,3 +24,13 @@ a { cursor: pointer; }
 a .none { color: @black; }
 .twToolBox { visibility: hidden; color: #999; }
 .make_comment { display: none; }
+
+.droparea {
+    text-align: center;
+}
+.droparea input {
+	cursor: pointer; 
+    /*visibility: hidden; */
+	border-width: 0px;
+	border-color: 000;
+}

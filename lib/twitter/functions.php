@@ -41,16 +41,16 @@ function makeTable($tweets, $public = false) {
 		}
 		
 		if ( isset($tweet->entities->media[0]->sizes->thumb->w) ) 
-			echo '<a onclick="loadIMG(\'Image\',\''. $tweet->entities->media[0]->media_url .'\');" data-toggle="modal" href="#imgModal"><img src="'. $tweet->entities->media[0]->media_url . ':thumb" /></a><br />';
+			echo '<a onclick="loadIMG(\'Image\',\''. $tweet->entities->media[0]->media_url .'\');" data-toggle="modal" href="#mdl"><img src="'. $tweet->entities->media[0]->media_url . ':thumb" /></a><br />';
 		if ( isset($tweet->retweeted_status->entities->media[0]->sizes->thumb->w) ) 
-			echo '<a onclick="loadIMG(\'Image\',\''. $tweet->retweeted_status->entities->media[0]->media_url .'\');" data-toggle="modal" href="#imgModal"><img src="'. $tweet->retweeted_status->entities->media[0]->media_url . ':thumb" /></a><br />';
+			echo '<a onclick="loadIMG(\'Image\',\''. $tweet->retweeted_status->entities->media[0]->media_url .'\');" data-toggle="modal" href="#mdl"><img src="'. $tweet->retweeted_status->entities->media[0]->media_url . ':thumb" /></a><br />';
 		elseif ( preg_match("/twitpic\.com/",$tweet->entities->urls[0]->display_url) ) {
 			$code = explode("/",$tweet->entities->urls[0]->display_url);
-			echo '<a onclick="loadIMG(\'Twitpic\',\'http://twitpic.com/show/thumb/'.$code[1].'\');" data-toggle="modal" href="#imgModal"><img src="http://twitpic.com/show/mini/'.$code[1].'" /></a><br />';
+			echo '<a onclick="loadIMG(\'Twitpic\',\'http://twitpic.com/show/thumb/'.$code[1].'\');" data-toggle="modal" href="#mdl"><img src="http://twitpic.com/show/mini/'.$code[1].'" /></a><br />';
 		}
 		elseif ( preg_match("/yfrog\.com/",$tweet->entities->urls[0]->display_url) ) {
 			$code = explode("/",$tweet->entities->urls[0]->display_url);
-			echo '<a onclick="loadIMG(\'yfrog\',\'http://yfrog.com/'.$code[1].':medium\');" data-toggle="modal" href="#imgModal"><img src="http://yfrog.com/'.$code[1].':small" /></a><br />';
+			echo '<a onclick="loadIMG(\'yfrog\',\'http://yfrog.com/'.$code[1].':medium\');" data-toggle="modal" href="#mdl"><img src="http://yfrog.com/'.$code[1].':small" /></a><br />';
 		}
 		elseif ( preg_match("/youtube\.com\/watch/",$tweet->entities->urls[0]->expanded_url) ) {
 			$url = explode("v=",$tweet->entities->urls[0]->expanded_url);
@@ -59,7 +59,7 @@ function makeTable($tweets, $public = false) {
 				$url = $url[0];
 			}
 			else $url = $url[1];
-			echo '<a onclick="loadYT(\''. $url .'\');" data-toggle="modal" href="#imgModal"><img src="http://img.youtube.com/vi/'.$url.'/2.jpg" /></a><br />';
+			echo '<a onclick="loadYT(\''. $url .'\');" data-toggle="modal" href="#mdl"><img src="http://img.youtube.com/vi/'.$url.'/2.jpg" /></a><br />';
 		}
 		elseif ( preg_match("/youtu\.be\//",$tweet->entities->urls[0]->expanded_url) ) {
 			$url = preg_replace("/https?\:\/\//","",$tweet->entities->urls[0]->expanded_url);
@@ -69,7 +69,7 @@ function makeTable($tweets, $public = false) {
 				$url = $url[0];
 			}
 			else $url = $url[1];
-			echo '<a onclick="loadYT(\''. $url .'\');" data-toggle="modal" href="#imgModal"><img src="http://img.youtube.com/vi/'.$url.'/2.jpg" /></a><br />';
+			echo '<a onclick="loadYT(\''. $url .'\');" data-toggle="modal" href="#mdl"><img src="http://img.youtube.com/vi/'.$url.'/2.jpg" /></a><br />';
 		}
 
 		if ( $public ) echo '<span style="color: #999;" class="pull-right">'.date("d-m H:i:s O",strtotime($tweet->created_at)).'</span>';
@@ -115,7 +115,7 @@ function linkify_tweet($twdata) {
 	else $tweet = $twdata->text;
 
 	$tweet = str_replace($twdata->entities->urls[0]->url,
-        '<a onclick="loadIFrame(\''. str_replace("https","http",$twdata->entities->urls[0]->url) .'\');" data-toggle="modal" href="#imgModal">'. $twdata->entities->urls[0]->display_url .'</a>',
+        '<a onclick="loadIFrame(\''. str_replace("https","http",$twdata->entities->urls[0]->url) .'\');" data-toggle="modal" href="#mdl">'. $twdata->entities->urls[0]->display_url .'</a>',
         $tweet);
 	$tweet = preg_replace('/(^|\s)@(\w+)/',
         '\1<a href="#" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name=\2\',\'span3\');">@\2</a>',

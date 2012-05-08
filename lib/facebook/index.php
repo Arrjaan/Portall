@@ -91,7 +91,7 @@
 		$data = json_decode(file_get_contents("https://graph.facebook.com/".$wall['id']."?access_token=".$facebook->getAccessToken()),true);
 		
 		echo "<h2>". $wall['name'] ." <a href=\"#\" onclick=\"reset();\" class=\"close\">&times;</a></h2>";
-		echo '<table class="table"><tr><td><a onclick="loadIMG(\''.$data['name'].'\',\'http://graph.facebook.com/'.$wall['id'].'/picture?type=large\');" data-toggle="modal" href="#imgModal"><img src="http://graph.facebook.com/'.$wall['id'].'/picture?type=normal" /></a></td><td>';
+		echo '<table class="table"><tr><td><a onclick="loadIMG(\''.$data['name'].'\',\'http://graph.facebook.com/'.$wall['id'].'/picture?type=large\');" data-toggle="modal" href="#mdl"><img src="http://graph.facebook.com/'.$wall['id'].'/picture?type=normal" /></a></td><td>';
 		
 		echo  '<strong>'.$data['name'].'</strong><br />';
 		if ( !empty($data['birthday']) ) echo 'Birthday: '.$data['birthday'].'<br />';

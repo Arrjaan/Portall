@@ -22,10 +22,8 @@
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="/lib/layout/ico/favicon.ico">
 	
-	<!-- Le scripts -->
-	<script src="/lib/js/jquery.js"></script>
-	<script src="/lib/js/ajax.js"></script>
-		
+	<script src="/lib/layout/js/jquery.js"></script>
+	
 	<meta property="og:title" content="Portall" />
 	<meta property="og:type" content="website" />
 	<meta property="og:description" content="Social networking reinvented." />
@@ -131,16 +129,9 @@
       </div>
     </div>
 
+	<span id="quene" rel="tooltip" data-placement="left" title="Amount of AJAX calls in quene." class="badge pull-right tt" onclick="this.innerHTML = quene.length;">3</span>
+	
     <div class="container" id="content">
-		<header  class="jumbotron subhead visible-phone">
-		<div class="subnav">
-			<ul class="nav nav-pills">
-				<li class="active"><a href="#tw">Twitter</a></li>
-				<li class=""><a href="#fb">Facebook</a></li>
-				<li class=""><a href="#ui">User Info</a></li>
-			</ul>
-		</div>
-		</header>
 		<audio id="sound">
 			<source src="/lib/sound/alert.ogg" type="audio/ogg" />
 			<source src="/lib/sound/alert.mp3" type="audio/mpeg" />
@@ -161,16 +152,24 @@
 		<div id="postM" class="control-group">
 			<div class="controls">
 				<label id="postPrefs">Twitter <a onclick="setStatus('Twitter', 'false');"><i class="icon-ok"></i></a> | Facebook <a onclick="setStatus('Facebook', 'true');"><i class="icon-remove"></i></a></label>
-				<textarea onkeyup="count(this.value)" class="input-xlarge span6" id="nTweet" rows="1"></textarea><br /><button type="button" onclick="status();" class="btn btn-primary">Send!</button>
+				<textarea onkeyup="count(this.value)" class="input-xlarge span6" id="nTweet" rows="1"></textarea><br />
+				<a href="#upld" data-toggle="modal" class="btn"><i class="icon-camera"></i></a>  
+				<button type="button" onclick="status();" class="btn btn-primary">Send!</button>
 				<!-- <input size="150" onkeyup="count(this.value)" type="text" id="nTweet" class="input-xlarge search-query"/> -->
 				<span id="postMHelp" class="help-inline">140</span>
 			</div>
 		</div>	
 	</form>
-      <!-- Columns -->
+	
+	<ul class="nav nav-tabs visible-phone" id="tabs">
+		<li><a href="#span1">Twitter</a></li>
+		<li><a href="#span2">Facebook</a></li>
+		<li><a href="#span3">User Info</a></li>
+	</ul>
+    <div class="tab-content">
       <div class="row">
 		<a id="tw"></a>
-        <div class="span4" id="span1">
+        <div class="span4 tab-pane fade in active" id="span1" >
           <h2>Twitter</h2>
 			<?php
 				if ( !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
@@ -182,7 +181,7 @@
 			?>
 		</div>
 		<a id="fb"></a>
-        <div class="span4" id="span2">
+        <div class="span4 tab-pane fade in active" id="span2">
           <h2>Facebook</h2>
 			<?php
 				if ( $_SESSION['facebook'] && isset($_SESSION['facebook']) ) {
@@ -194,9 +193,10 @@
 			?>
 		</div>
 		<a id="ui"></a>
-		<div class="span4" id="span3">
+		<div class="span4 tab-pane fade in active" id="span3">
 		</div>
       </div>
+	  </div>
 		<?php } ?>
       <hr>
 
@@ -206,15 +206,28 @@
 
     </div> <!-- /container -->
 	
-	<div class="modal fade" id="imgModal">
+	<div class="modal fade" id="mdl">
 		<div class="modal-header">
 			<a class="close" data-dismiss="modal"><i class="icon-remove"></i></a>
-			<h3 id="imgModalTitle"></h3>
+			<h3 id="mdlTitle"></h3>
 		</div>
-		<div class="modal-body" style="text-align: center;" id="imgModalBody">
+		<div class="modal-body" style="text-align: center;" id="mdlBody">
 			<p><img src="/lib/layout/img/ajax-loader.gif" alt="Loading..." /></p>
 		</div>
-		<div id="imgModalFooter" class="modal-footer">
+		<div id="mdlFooter" class="modal-footer">
+		</div>
+    </div>
+	
+	<div class="modal fade" id="upld">
+		<div class="modal-header">
+			<a class="close" data-dismiss="modal"><i class="icon-remove"></i></a>
+			<h3 id="mdlTitle">Image Upload</h3>
+		</div>
+		<div class="modal-body" style="text-align: center;" id="mdlBody">
+			<p>Drop your image here.</p>
+			<input type="file" class="droparea" name="xfile" data-post="/upload">
+		</div>
+		<div id="mdlFooter" class="modal-footer">
 		</div>
     </div>
 
@@ -224,7 +237,43 @@
     <!--
 	
 	-->
-	<script src="/lib/layout/js/jquery.js"></script>
     <script src="/lib/layout/js/bootstrap.min.js"></script>
-  </body>
+	<script src="/lib/js/ajax.js"></script>
+	<script src="/lib/js/droparea.js"></script>
+	
+	<script>
+		$('.droparea').droparea({
+			'instructions': '',
+            'init' : function(result){
+			},
+			'start' : function(area){
+				area.find('.error').remove(); 
+			},
+            'error' : function(result, input, area){
+				$('<div class="error">').html(result.error).prependTo(area); 
+                return 0;
+			},
+            'complete' : function(result, file, input, area){
+				if((/image/i).test(file.type)){
+					area.find('img').remove();
+                    area.append($('<img>',{'src': result.path + result.filename + '?' + Math.random()}));
+				} 
+			}
+		});		
+		$('.tt').tooltip();
+		$('#tabs a').click(function (e) {
+			e.preventDefault();
+			$(this).tab('show');
+		});
+		$('#tabs a').on('show', function (e) {
+			$('#span1,#span2,#span3').css("display","none");
+			var tabid = e.target;
+			tabid = tabid.toString();
+			tabid = tabid.split("#");
+			tabid = tabid[1];
+			tabid = "#"+tabid;
+			$(tabid).css("display","inline");
+		})
+	</script>
+</body>
 </html>
