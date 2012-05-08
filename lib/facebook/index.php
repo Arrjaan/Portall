@@ -104,6 +104,6 @@
 		$posts = $facebook->api('/'.$wall['id'].'/feed','GET');
 		$posts = $posts["data"];
 		
-		makeFBTable($posts); 
+		makeFBTable($posts, false); 
 	}
 ?>

@@ -3,7 +3,7 @@
 function makeFBTable($wall, $title = "Facebook", $type = "Posts") {	
 	global $prefs;
 	
-	echo "<h2>".$title."</h2>";
+	if ( $type ) echo "<h2>".$title."</h2>";
 	echo '<table class="table">
 			<thead>
 				<tr>
@@ -76,8 +76,17 @@ function makeFBTable($wall, $title = "Facebook", $type = "Posts") {
 }
 
 function linkify($post) {
-	if ( !empty($post['link']) && !empty($post['picture']) ) $message = str_replace($post['link'], "", $post['message']);
-	else $message = str_replace($post['link'],'<a onclick="loadIFrame(\''. str_replace("https","http",$post['link']) .'\');" data-toggle="modal" href="#mdl">'. $post['link'] .'</a>', $post['message']);
+	$wordwrap = explode(" ",$post['message']);
+	$message = '';
+	
+	foreach ( $wordwrap as $word ) {
+		if ( strlen($word) > 40 && !preg_match("/https?\:\/\//",$word) ) $message .= wordwrap($word, 40, '<br>', true)." ";
+		else $message .= $word." ";
+	}
+	
+	if ( !empty($post['link']) && !empty($post['picture']) ) $message = str_replace($post['link'], "", $message);
+	else $message = str_replace($post['link'],'<a onclick="loadIFrame(\''. str_replace("https","http",$post['link']) .'\');" data-toggle="modal" href="#mdl">'. $post['link'] .'</a>', $message);
+	
 	return $message;
 }
 
