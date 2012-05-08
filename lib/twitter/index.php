@@ -66,11 +66,11 @@ if ( $_REQUEST['call'] == "account/verify_credentials" ) {
 	echo "<strong>". $tweets->name ."</strong> @".$tweets->screen_name ."<br />";
 	echo "Bio: ".$tweets->description ."<br />";
 	echo "Tweets: ".$tweets->tweets_count ."<br />";
-	echo "Followers: ".$tweets->followers_count ." | Follows: ". $tweets->friends_count ." | Favorites: ". $tweets->favourites_count ." | Listed: ". $tweets->listed_count ."<br />";
+	echo "Followers: ".$tweets->followers_count ." | Follows: ". $tweets->friends_count ." | Favorites: ". $tweets->favourites_count ." | Listed: ". $tweets->listed_count ."<br /><br />";
 		
 	echo '</td></tr></table>';
 
-	makeTable($tweets);
+	makeTable($u_tweets);
 }
 if ( $_REQUEST['call'] == "users/lookup" || isset($lookup) ) {	
 	echo "<h2>". $tweets[0]->name ." <a href=\"#\" onclick=\"reset();\" class=\"close\">&times;</a></h2>";
