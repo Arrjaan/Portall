@@ -11,8 +11,38 @@ function makeFBTable($wall, $title = "Facebook", $type = "Posts") {
 				</tr>
 			</thead><tbody>';
 			
-	foreach ( $wall as $post ) {
+	foreach ( $wall as $post ) {		
+		if ( $type == "Notifications" ) {
+			if ( $post['application']['name'] == "Feed Comments" || $post['application']['name'] == "Photos" || $post['application']['name'] == "Likes" ) {
+				echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td>';
+				if ( !empty($post['from']) ) echo '<td><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a>:<br />';
+				if ( !empty($post['message']) ) echo $post['message'].'<br />';
+				if ( $post['application']['name'] == "Likes" ) echo $post['title'].'<br />';
+				
+				if ( $post['application']['name'] == "Feed Comments" || $post['application']['name'] == "Likes" ) {
+					$cid = explode("posts/",$post['link']);
+					$cid = $cid[1];
+					$qm = explode("?",$cid);
+					$cid = $qm[0];
+					$qm = "?".$qm[1];
+				}
+				
+				if ( $post['application']['name'] == "Photos" ) {
+					$cid = explode("fbid=",$post['link']);
+					$cid = explode("&",$cid[1]);
+					$cid = $cid[0];
+				}
+				
+				echo '<a onclick="ajax(\'/lib/facebook/index.php?call=/'.$cid.'/comments'.$qm.'\', \'span3\');">&raquo; See comment</a><br />'; 
+				echo '</td></tr>';
+			
+			}
+			else echo '<tr><td><img src="/thumb/'.base64_encode('http://graph.facebook.com/'.$post['application']['id'].'/picture').'/50" /></td><td>'.$post['title'].'<br /><a href="'.$post['link'].'" target="_BLANK">&raquo; Go to application</a></td></tr>';
+			continue;
+		}
+		
 		if ( empty($post['message']) ) continue;
+		
 		if ( isset($post['to']['data'][0]['name']) ) {
 			echo '<tr><td><img src="http://graph.facebook.com/'.$post['from']['id'].'/picture" /></td><td class="msgRow"><a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['from']['id'].'\',\'span3\');">'. $post['from']['name'] .'</a> <i class="icon-chevron-right"></i> <a style="color: #999;" onclick="ajax(\'/lib/facebook/index.php?call=/'.$post['to']['data'][0]['id'].'\',\'span3\');">'. $post['to']['data'][0]['name'] .'</a>';
 			$cnt = count($post['to']['data']) - 1;
@@ -56,15 +86,17 @@ function makeFBTable($wall, $title = "Facebook", $type = "Posts") {
 		if ( empty($post['likes']['count']) ) $likes = 0;
 		else $likes = $post['likes']['count'];
 		
-		echo '<span class="twToolBox">
-			<a onclick="fbLike(\''.$post['id'].'\');"><img src="/lib/layout/img/like.png" /></a> '.$likes.' ';
-		echo '<a onclick="fbShowComments(\''.$post['id'].'\');"><img src="/lib/layout/img/comment.png" /></a> '.$post['comments']['count'];
-		
-		if ( $prefs['display_time'] == "relative" ) echo '<span class="pull-right">'.timetostr(strtotime($post['created_time'])).'</span>';
-		if ( $prefs['display_time'] == "absolute" ) echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($post['created_time'])).'</span>';
-		if ( $prefs['display_time'] !== "relative" && $prefs['display_time'] !== "absolute" ) echo '<span class="pull-right">'.date($prefs['display_time'],strtotime($post['created_time'])).'</span>';
-		
-		echo '</span>';
+		if ( $type !== "Notifications" ) {
+			echo '<span class="twToolBox">
+				<a onclick="fbLike(\''.$post['id'].'\');"><img src="/lib/layout/img/like.png" /></a> '.$likes.' ';
+			if ( !empty($post['comments']['count']) ) echo '<a onclick="fbShowComments(\''.$post['id'].'\');"><img src="/lib/layout/img/comment.png" /></a> '.$post['comments']['count'];
+			
+			if ( $prefs['display_time'] == "relative" ) echo '<span class="pull-right">'.timetostr(strtotime($post['created_time'])).'</span>';
+			if ( $prefs['display_time'] == "absolute" ) echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($post['created_time'])).'</span>';
+			if ( $prefs['display_time'] !== "relative" && $prefs['display_time'] !== "absolute" ) echo '<span class="pull-right">'.date($prefs['display_time'],strtotime($post['created_time'])).'</span>';
+			
+			echo '</span>';
+		}
 		
 		echo '</td></tr>';
 	}

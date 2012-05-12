@@ -103,11 +103,14 @@ class SimpleImage {
  
 }
 
-header('Content-type: image/jpeg');
+header('Content-type: image/gif');
+
+if ( !isset($page[3]) ) $size = 150;
+else $size = $page[3];
 
 $image = new SimpleImage;
 $image->load(base64_decode($page[2]));
-if ( $image->getWidth() > 150 ) $image->resizeToWidth(150);
+if ( $image->getWidth() > $size ) $image->resizeToWidth($size);
 $image->output();
 
 die();

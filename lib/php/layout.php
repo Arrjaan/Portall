@@ -38,7 +38,7 @@
 		function uFacebook() {
 			<?php 
 			if ( $page[1] == "home" ) echo "ajax('/lib/facebook/index.php?call=/me/home', 'span2');";
-			if ( $page[1] == "notify" ) echo "ajax('/lib/facebook/index.php?call=/me/home', 'span2');";
+			if ( $page[1] == "notify" ) echo "ajax('/lib/facebook/index.php?call=/me/notifications', 'span2');";
 			?>
 			setTimeout("uFacebook()",60000);
 		}
@@ -107,8 +107,8 @@
           <a class="brand" href="/">Portall</a>
           <div class="nav-collapse">
             <ul class="nav">
-				<li><a href="/home">Home</a></li>
-				<li><a href="/notify">Notifications</a></li>		
+				<li <?php if ( $page[1] == "home" ) echo 'class="active"'; ?>><a href="/home">Home</a></li>
+				<li <?php if ( $page[1] == "notify" ) echo 'class="active"'; ?>><a href="/notify">Notifications</a></li>		
             </ul>
 			<form class="navbar-search pull-left" action="#" onsubmit="alert(this.form.getElementsByTagName('input')[0].value);">
 				<input class="search-query span2" placeholder="Search" type="text">
@@ -140,7 +140,7 @@
 		</audio>
 	<?php if ( $_SESSION['debug'] ) { echo "SESSIONS:<br />"; print_r($_SESSION); echo "<br /><br />COOKIES:<br />"; print_r($_COOKIE); echo "<br /><br />"; ?>
 	<a onclick="document.getElementById('sound').play();">&raquo; Test sound</a><br />
-	<a onclick="document.getElementById('source').innerHTML = quene.length + ': ' + quene.toSource() + '<br /><br />';">&raquo; View AJAX status</a><br />
+	<a onclick="document.getElementById('source').innerHTML = quene.length + ': ' + quene.toSource() + '<br /><br />';">&raquo; View AJAX status</a><br /><br />
 	<span id="source"></span>
 	<?php } ?>
 	<?php if ( $type == "home" ) { ?>

@@ -49,7 +49,7 @@
 	
 	if ( !$user ) {
 		$params = array(
-			'scope' => 'publish_stream, user_status, friends_status, user_activities, friends_activities, read_stream, user_likes, friends_likes, read_mailbox, read_stream, manage_notifications, user_hometown, friends_hometown, user_education_history, friends_education_history, user_birthday, friends_birthday,user_relationships, friends_relationships, user_relationship_details, friends_relationship_details'
+			'scope' => 'publish_stream, user_status, friends_status, user_activities, friends_activities, read_stream, user_likes, friends_likes, read_mailbox, read_stream, manage_notifications, user_hometown, friends_hometown, user_education_history, friends_education_history, user_birthday, friends_birthday,user_relationships, friends_relationships, user_relationship_details, friends_relationship_details, user_photos, friends_photos'
 		);
 		$loginUrl = $facebook->getLoginUrl($params);	
 		header("Location: ".$loginUrl);
@@ -74,6 +74,12 @@
         $wall = $wall['data'];
 		
 		makeFBTable($wall);
+	}
+	if ( $_REQUEST['call'] == "/me/notifications" ) {	
+		$wall = $facebook->api('/me/notifications/?include_read=true','GET');
+        $wall = $wall['data'];
+		
+		makeFBTable($wall, "Facebook", "Notifications");
 	}
 	/* Load Comments */
 	if ( preg_match("/[0-9_]{10,40}\/comments/",$_REQUEST['call']) ) {	
