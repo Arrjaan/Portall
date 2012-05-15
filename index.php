@@ -17,7 +17,11 @@ if ( !empty($_SESSION['userid']) && !empty($_SESSION['session']) ) {
 			"oauth_token" => $data['tw_token'],
 			"oauth_token_secret" => $data['tw_secret']
 		);
-		if ( empty($_SESSION['facebook']) && !empty($data['facebook']) ) header("Location: /lib/facebook");
+		if ( empty($_SESSION['facebook']) && !empty($data['facebook']) ) {
+			$_SESSION['fb_436057069743792_access_token'] = $data['fb_token'];
+			$_SESSION['fb_436057069743792_user_id'] = $data['facebook'];
+			$_SESSION['facebook'] = $data['facebook'];
+		}
 	}
 	else {
 		unset($_SESSION['userid']);
@@ -35,6 +39,11 @@ if ( !empty($_COOKIE['portall_session']) ) {
 			"oauth_token" => $data['tw_token'],
 			"oauth_token_secret" => $data['tw_secret']
 		);
+		if ( empty($_SESSION['facebook']) && !empty($data['facebook']) ) {
+			$_SESSION['fb_436057069743792_access_token'] = $data['fb_token'];
+			$_SESSION['fb_436057069743792_user_id'] = $data['facebook'];
+			$_SESSION['facebook'] = $data['facebook'];
+		}
 		$_SESSION['userid'] = $data['id'];
 		$_SESSION['session'] = $_COOKIE['portall_session'];
 		setcookie("portall_session",$_SESSION['session'],time()+60*60*24,'/','portall.eu5.org');

@@ -56,7 +56,7 @@
 				var old = node.style.width;
 				old = old.replace("%","");
 				old = Number(old);
-				old = old + 3 / i;
+				old = old + 3;
 				node.style.width = old + "%";
 			}
 			setTimeout("incBar();",80);

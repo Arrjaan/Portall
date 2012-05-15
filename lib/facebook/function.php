@@ -89,7 +89,7 @@ function makeFBTable($wall, $title = "Facebook", $type = "Posts") {
 		if ( $type !== "Notifications" ) {
 			echo '<span class="twToolBox">
 				<a onclick="fbLike(\''.$post['id'].'\');"><img src="/lib/layout/img/like.png" /></a> '.$likes.' ';
-			if ( !empty($post['comments']['count']) ) echo '<a onclick="fbShowComments(\''.$post['id'].'\');"><img src="/lib/layout/img/comment.png" /></a> '.$post['comments']['count'];
+			if ( is_numeric($post['comments']['count']) ) echo '<a onclick="fbShowComments(\''.$post['id'].'\');"><img src="/lib/layout/img/comment.png" /></a> '.$post['comments']['count'];
 			
 			if ( $prefs['display_time'] == "relative" ) echo '<span class="pull-right">'.timetostr(strtotime($post['created_time'])).'</span>';
 			if ( $prefs['display_time'] == "absolute" ) echo '<span class="pull-right">'.date("d-m H:i:s O",strtotime($post['created_time'])).'</span>';
