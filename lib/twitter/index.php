@@ -19,6 +19,22 @@ $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token['oau
 
 require_once('functions.php');
 
+if ( $_SESSION['limit'] < 15 ) {
+$hF = date("h");
+$hT = date("h",$_SESSION['limit_reset']);
+
+if ( $hF == $hT ) $diff = date("i",$_SESSION['limit_reset']) - date("i");
+else $diff = 60 + date("i",$_SESSION['limit_reset']) - date("i");
+$diff = $diff / 60 * 100;
+$diff = 100 - $diff;
+
+die('<h2>Error</h2>You have almost exceeded your Twitter API Rate-limit!<br><br>
+	<div class="progress progress-striped active">
+		<div class="bar" style="width: '.round($diff).'%;">'.round($diff).'%</div>
+    </div>
+	You have to wait till '.date("H:i:s",$_SESSION['limit_reset']).' before your timeline will show up again.');
+}
+
 if ( !isset($_SESSION['screen_name']) ) {
 	$acc = $connection->get("account/verify_credentials");
 	$_SESSION['screen_name'] = $acc->screen_name;
@@ -26,7 +42,12 @@ if ( !isset($_SESSION['screen_name']) ) {
 if ( !isset($_SESSION['since_id']) ) $_SESSION['since_id'] = 1;
 
 /* Post request. */
-if ( $_SERVER['REQUEST_METHOD'] == "GET" && isset($_REQUEST['call']) ) 
+if ( $_GET['call'] == "search" ) {
+	$data = $_GET;
+	unset($data['call']);
+	$tweets = $connection->get($_REQUEST['call'], $data);
+}
+elseif ( $_SERVER['REQUEST_METHOD'] == "GET" && isset($_REQUEST['call']) ) 
 	$tweets = $connection->get($_REQUEST['call'], array("include_entities" => "true"));
 if ( $_SERVER['REQUEST_METHOD'] == "POST" & isset($_REQUEST['call']) ) {	
 	$tweets = $connection->post($_REQUEST['call'], $_POST);
@@ -95,7 +116,11 @@ if ( $_REQUEST['call'] == "users/lookup" || isset($lookup) ) {
 				
 	makeTable($u_tweets);
 }
-
+/* Loading Searches. */
+if ( $_REQUEST['call'] == "search" ) {	
+	echo "<h2>Search <em>".urldecode($_REQUEST['q'])."</em></h2>";
+	makeTable($tweets->results);
+}
 /* Loading Tweets. */
 if ( $_REQUEST['call'] == "statuses/home_timeline" || $_REQUEST['call'] == "statuses/mentions" ) {	
 	echo "<h2>Twitter</h2>";

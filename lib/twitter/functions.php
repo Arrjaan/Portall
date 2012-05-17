@@ -1,5 +1,13 @@
 <?php
 
+function prefix($tweet, $property) {
+	if ( $_REQUEST['call'] == "search" ) {
+		if ( $property == "screen_name" || $property == "name" ) $property = "from_user";
+		return $tweet->$property;
+	}
+	else return $tweet->user->$property;
+}
+
 function makeTable($tweets, $public = false) {
 	global $prefs;
 	
@@ -13,9 +21,11 @@ function makeTable($tweets, $public = false) {
 			<thead>
 				<tr>';
 				if ( $_REQUEST['call'] == "statuses/mentions" ) echo '<th>Mentions</th>';
-				if ( $_REQUEST['call'] == "statuses/home_timeline" ) echo '<th>Tweets</th>';
+				if ( $_REQUEST['call'] == "statuses/home_timeline" || $_REQUEST['call'] == "search" ) echo '<th>Tweets</th>';
 				echo'</tr>
 			</thead><tbody>';
+			
+	
 			
 	foreach ( $tweets as $tweet ) {	
 		echo '<tr><td>';
@@ -35,8 +45,8 @@ function makeTable($tweets, $public = false) {
 		}
 		else {
 			$twText = linkify_tweet($tweet);
-			echo '<img src="'. $tweet->user->profile_image_url . '" />';
-			echo '</td><td class="msgRow"><a class="none" style="color: #999;" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name='. $tweet->user->screen_name .'\',\'span3\');">'. $tweet->user->name .'</a>:<br />'. $twText .'<br />';
+			echo '<img src="'. prefix($tweet,'profile_image_url') . '" />';
+			echo '</td><td class="msgRow"><a class="none" style="color: #999;" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name='. prefix($tweet,'screen_name') .'\',\'span3\');">'. prefix($tweet,'name') .'</a>:<br />'. $twText .'<br />';
 			$tweetid = $tweet->id;
 		}
 		

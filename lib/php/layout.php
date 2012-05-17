@@ -47,7 +47,7 @@
 			if ( $page[1] == "home" ) echo "ajax('/lib/twitter/index.php?call=statuses/home_timeline', 'span1');";
 			if ( $page[1] == "notify" ) echo "ajax('/lib/twitter/index.php?call=statuses/mentions', 'span1');";
 			?>
-			setTimeout("uTwitter()",45000);
+			setTimeout("uTwitter()",10000);
 		}
 		function incBar() {
 			for ( i=1;i<=3;i++ ) {
@@ -110,8 +110,10 @@
 				<li <?php if ( $page[1] == "home" ) echo 'class="active"'; ?>><a href="/home">Home</a></li>
 				<li <?php if ( $page[1] == "notify" ) echo 'class="active"'; ?>><a href="/notify">Notifications</a></li>		
             </ul>
-			<form class="navbar-search pull-left" action="#" onsubmit="alert(this.form.getElementsByTagName('input')[0].value);">
-				<input class="search-query span2" placeholder="Search" type="text">
+			<form class="navbar-search pull-left" action="#" onsubmit="return false;">
+				<div id="controll_search" class="control-group">
+					<input class="search-query span2" placeholder="Search" type="text" id="search">
+				</div>
 			</form>
 			<ul class="nav pull-right">
 				<?php if ( !empty($_SESSION['userid']) ) echo '<li><a href="/settings">Settings</a></li>'; ?>
