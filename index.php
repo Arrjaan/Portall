@@ -10,19 +10,7 @@ if ( isset($_GET['clear']) ) { session_destroy(); session_start(); }
 if ( !empty($_SESSION['userid']) && !empty($_SESSION['session']) ) {
 	$q = $db->query("select * from `users` where `id` = '".$_SESSION['userid']."' and `session` = '".$_SESSION['session']."'");
 
-	if ( $q->num_rows > 0 ) {
-		$data = $q->fetch_assoc();
-		$_SESSION['access_token'] = 
-		array( 
-			"oauth_token" => $data['tw_token'],
-			"oauth_token_secret" => $data['tw_secret']
-		);
-		if ( empty($_SESSION['facebook']) && !empty($data['facebook']) ) {
-			$_SESSION['fb_436057069743792_access_token'] = $data['fb_token'];
-			$_SESSION['fb_436057069743792_user_id'] = $data['facebook'];
-			$_SESSION['facebook'] = $data['facebook'];
-		}
-	}
+	if ( $q->num_rows > 0 ) restoreLogin($q->fetch_assoc());
 	else {
 		unset($_SESSION['userid']);
 		unset($_SESSION['session']);
@@ -32,25 +20,8 @@ if ( !empty($_SESSION['userid']) && !empty($_SESSION['session']) ) {
 if ( !empty($_COOKIE['portall_session']) ) {
 	$q = $db->query("select * from `users` where `session` = '".$_COOKIE['portall_session']."'");
 
-	if ( $q->num_rows > 0 ) {
-		$data = $q->fetch_assoc();
-		$_SESSION['access_token'] = 
-		array( 
-			"oauth_token" => $data['tw_token'],
-			"oauth_token_secret" => $data['tw_secret']
-		);
-		if ( empty($_SESSION['facebook']) && !empty($data['facebook']) ) {
-			$_SESSION['fb_436057069743792_access_token'] = $data['fb_token'];
-			$_SESSION['fb_436057069743792_user_id'] = $data['facebook'];
-			$_SESSION['facebook'] = $data['facebook'];
-		}
-		$_SESSION['userid'] = $data['id'];
-		$_SESSION['session'] = $_COOKIE['portall_session'];
-		setcookie("portall_session",$_SESSION['session'],time()+60*60*24,'/','portall.eu5.org');
-	}
-	else {
-		setcookie("portall_session", "", time()-3600,'/','portall.eu5.org');
-	}
+	if ( $q->num_rows > 0 ) restoreLogin($q->fetch_assoc());
+	else setcookie("portall_session", "", time()-3600,'/','portall.eu5.org');
 }
 
 /* Load Preferences */

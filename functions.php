@@ -1,5 +1,22 @@
 <?php
 
+function restoreLogin($data) {
+	if ( empty($_SESSION['limit']) ) $_SESSION['limit'] = '?';
+	$_SESSION['access_token'] = 
+		array( 
+			"oauth_token" => $data['tw_token'],
+			"oauth_token_secret" => $data['tw_secret']
+		);
+	if ( empty($_SESSION['facebook']) && !empty($data['facebook']) ) {
+		$_SESSION['fb_436057069743792_access_token'] = $data['fb_token'];
+		$_SESSION['fb_436057069743792_user_id'] = $data['facebook'];
+		$_SESSION['facebook'] = $data['facebook'];
+	}
+	$_SESSION['userid'] = $data['id'];
+	$_SESSION['session'] = $_COOKIE['portall_session'];
+	setcookie("portall_session",$_SESSION['session'],time()+60*60*24,'/','portall.eu5.org');
+}
+
 function limitStatus() {
 	if ( $_SESSION['limit'] > 299 ) return "badge-success";
 	if ( $_SESSION['limit'] > 149 ) return "badge-info";
@@ -8,7 +25,6 @@ function limitStatus() {
 }
 
 function timetostr($time) {
-
     $time_difference = time() - $time ;
 
     $seconds    = $time_difference ;
