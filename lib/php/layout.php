@@ -34,6 +34,7 @@
   </head>
 
   <body data-spy="scroll" data-target=".subnav" data-offset="50">
+	<?php if ( $page[1] == "home" || $page[1] == "notify" ) { ?>
 	<script>
 		function uFacebook() {
 			<?php 
@@ -47,7 +48,7 @@
 			if ( $page[1] == "home" ) echo "ajax('/lib/twitter/index.php?call=statuses/home_timeline', 'span1');";
 			if ( $page[1] == "notify" ) echo "ajax('/lib/twitter/index.php?call=statuses/mentions', 'span1');";
 			?>
-			setTimeout("uTwitter()",10000);
+			setTimeout("uTwitter()",15000);
 		}
 		function incBar() {
 			for ( i=1;i<=3;i++ ) {
@@ -66,13 +67,15 @@
 			setStatus("Twitter","true");
 			setStatus("Facebook","false");	
 			setFBID("<?php echo $_SESSION['facebook']; ?>");
+			setDefault("<?php echo $prefs['default']; ?>");
 			document.getElementById('span3').innerHTML = '<h2>User Info</h2><div class="progress progress-striped active"><div class="bar" style="width: 0%;"></div></div>';
 			<?php // FB + TW
 			if ( isset($_SESSION['facebook']) && !empty($_SESSION['access_token']) && !empty($_SESSION['access_token']['oauth_token']) && !empty($_SESSION['access_token']['oauth_token_secret']) ) {
 			?>
 			uTwitter();
 			uFacebook();
-			ajax('/lib/facebook/index.php?call=/<?php echo $_SESSION['facebook']; ?>', 'span3');
+			<?php if ( $prefs['default'] == "twitter" ) { ?>ajax('/lib/twitter/index.php?call=account/verify_credentials','span3');<?php } ?>
+			<?php if ( $prefs['default'] == "facebook" ) { ?>ajax('/lib/facebook/index.php?call=/<?php echo $_SESSION['facebook']; ?>', 'span3');<?php } ?>
 			document.getElementById('span1').innerHTML = '<h2>Twitter</h2><div class="progress progress-striped active"><div class="bar" style="width: 0%;"></div></div>';
 			document.getElementById('span2').innerHTML = '<h2>Facebook</h2><div class="progress progress-striped active"><div class="bar" style="width: 0%;"></div></div>';
 			<?php
@@ -95,6 +98,7 @@
 			incBar();
 		});
 	</script>
+	<?php } ?>
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
@@ -151,7 +155,7 @@
         <?php echo $content; ?>
       </div>
 	<?php } else { ?>
-	<span id="ratelimit" rel="tooltip" data-placement="right" title="Amount of remaining available Twitter-API calls till <?php echo date("H:i:s",$_SESSION['limit_reset']); ?>." class="badge pull-left tt <?php echo limitStatus(); ?>" onclick="ajax('/data/session/limit','ratelimit')"><?php echo $_SESSION['limit']; ?></span>
+	<span id="ratelimit" rel="tooltip" data-placement="right" title="Amount of remaining available Twitter-API calls till <?php echo date("H:i:s",$_SESSION['limit_reset']); ?>." class="badge pull-left tt <?php echo limitStatus(); ?>" onclick="ajax('/data/limit','ratelimit')"><?php echo $_SESSION['limit']; ?></span>
 	<span id="quene" rel="tooltip" data-placement="left" title="Amount of AJAX calls in quene." class="badge pull-right tt" onclick="this.innerHTML = quene.length;">3</span>
 	
 	<form onsubmit="status();return false;" style="text-align: center;" >
@@ -246,7 +250,7 @@
     <script src="/lib/layout/js/bootstrap.min.js"></script>
 	<script src="/lib/js/ajax.js"></script>
 	<script src="/lib/js/droparea.js"></script>
-	
+	<?php if ( $page[1] == "home" || $page[1] == "notify" ) { ?>
 	<script>
 		$('.droparea').droparea({
 			'instructions': '',
@@ -291,5 +295,6 @@
 		});
 		*/
 	</script>
+	<?php } ?>
 </body>
 </html>

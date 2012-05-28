@@ -19,20 +19,20 @@ $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token['oau
 
 require_once('functions.php');
 
-if ( $_SESSION['limit'] < 15 ) {
-$hF = date("h");
-$hT = date("h",$_SESSION['limit_reset']);
+if ( $_SESSION['limit'] < 15 && $_SESSION['limit'] > 0 && $_SESSION['limit_reset'] > time() ) {
+	$hF = date("h");
+	$hT = date("h",$_SESSION['limit_reset']);
 
-if ( $hF == $hT ) $diff = date("i",$_SESSION['limit_reset']) - date("i");
-else $diff = 60 + date("i",$_SESSION['limit_reset']) - date("i");
-$diff = $diff / 60 * 100;
-$diff = 100 - $diff;
+	if ( $hF == $hT ) $diff = date("i",$_SESSION['limit_reset']) - date("i");
+	else $diff = 60 + date("i",$_SESSION['limit_reset']) - date("i");
+	$diff = $diff / 60 * 100;
+	$diff = 100 - $diff;
 
-die('<h2>Error</h2>You have almost exceeded your Twitter API Rate-limit!<br><br>
-	<div class="progress progress-striped active">
-		<div class="bar" style="width: '.round($diff).'%;">'.round($diff).'%</div>
-    </div>
-	You have to wait till '.date("H:i:s",$_SESSION['limit_reset']).' before your timeline will show up again.');
+	die('<h2>Error</h2>You have almost exceeded your Twitter API rate-limit!<br><br>
+		<div class="progress progress-striped active progress-warning">
+			<div class="bar" style="width: '.round($diff).'%;">'.round($diff).'%</div>
+		</div>
+		You have to wait till '.date("H:i:s",$_SESSION['limit_reset']).' before your timeline will show up again.');
 }
 
 if ( !isset($_SESSION['screen_name']) ) {
@@ -77,24 +77,27 @@ if ( $_REQUEST['call'] == "friendships/destroy" || $_REQUEST['call'] == "friends
 	$lookup = $_POST['user_id'];
 }
 if ( $_REQUEST['call'] == "account/verify_credentials" ) {	
-	echo "<h2>". $tweets->name ."</h2>";
+	echo "<h2>". $tweets->name . closeBtn();
 	$u_tweets = $connection->get("statuses/user_timeline", array("screen_name" => $tweets->screen_name, "count" => "10"));
 	
 	$connection->get("users/profile_image/".$tweets->screen_name, array("size" => "bigger"));
+	$bigger = $connection->http_info['redirect_url'];
+	$connection->get("users/profile_image/".$tweets->screen_name, array("size" => "original"));
+	$original = $connection->http_info['redirect_url'];
 	
-	echo '<table><tbody><tr><td><img src="'. $connection->http_info['redirect_url'] .'" /></td><td>';
+	echo '<table class="table"><tr><td><a onclick="loadIMG(\'' .$tweets->name. '\',\''.$original.'\');" data-toggle="modal" href="#mdl"><img src="'. $bigger .'" /></a></td><td>';
 	
 	echo "<strong>". $tweets->name ."</strong> @".$tweets->screen_name ."<br />";
 	echo "Bio: ".$tweets->description ."<br />";
 	echo "Tweets: ".$tweets->tweets_count ."<br />";
 	echo "Followers: ".$tweets->followers_count ." | Follows: ". $tweets->friends_count ." | Favorites: ". $tweets->favourites_count ." | Listed: ". $tweets->listed_count ."<br /><br />";
 		
-	echo '</td></tr></table>';
+	echo '</td></tr></tbody></table>';
 
 	makeTable($u_tweets);
 }
 if ( $_REQUEST['call'] == "users/lookup" || isset($lookup) ) {	
-	echo "<h2>". $tweets[0]->name ." <a href=\"#\" onclick=\"reset();\" class=\"close\">&times;</a></h2>";
+	echo "<h2>". $tweets[0]->name . closeBtn();
 	$u_tweets = $connection->get("statuses/user_timeline", array("screen_name" => $tweets[0]->screen_name, "count" => "10"));
 	
 	$connection->get("users/profile_image/".$tweets[0]->screen_name, array("size" => "bigger"));
@@ -118,7 +121,7 @@ if ( $_REQUEST['call'] == "users/lookup" || isset($lookup) ) {
 }
 /* Loading Searches. */
 if ( $_REQUEST['call'] == "search" ) {	
-	echo "<h2>Search <em>".urldecode($_REQUEST['q'])."</em></h2>";
+	echo "<h2>Search <em>".urldecode($_REQUEST['q'])."</em>". closeBtn();
 	makeTable($tweets->results);
 }
 /* Loading Tweets. */

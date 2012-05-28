@@ -21,7 +21,7 @@ function makeTable($tweets, $public = false) {
 			<thead>
 				<tr>';
 				if ( $_REQUEST['call'] == "statuses/mentions" ) echo '<th>Mentions</th>';
-				if ( $_REQUEST['call'] == "statuses/home_timeline" || $_REQUEST['call'] == "search" ) echo '<th>Tweets</th>';
+				else echo '<th>Tweets</th>';
 				echo'</tr>
 			</thead><tbody>';
 			
@@ -52,7 +52,7 @@ function makeTable($tweets, $public = false) {
 		
 		if ( isset($tweet->entities->media[0]->sizes->thumb->w) ) 
 			echo '<a onclick="loadIMG(\'Image\',\''. $tweet->entities->media[0]->media_url .'\');" data-toggle="modal" href="#mdl"><img src="'. $tweet->entities->media[0]->media_url . ':thumb" /></a><br />';
-		if ( isset($tweet->retweeted_status->entities->media[0]->sizes->thumb->w) ) 
+		elseif ( isset($tweet->retweeted_status->entities->media[0]->sizes->thumb->w) ) 
 			echo '<a onclick="loadIMG(\'Image\',\''. $tweet->retweeted_status->entities->media[0]->media_url .'\');" data-toggle="modal" href="#mdl"><img src="'. $tweet->retweeted_status->entities->media[0]->media_url . ':thumb" /></a><br />';
 		elseif ( preg_match("/twitpic\.com/",$tweet->entities->urls[0]->display_url) ) {
 			$code = explode("/",$tweet->entities->urls[0]->display_url);
@@ -61,6 +61,11 @@ function makeTable($tweets, $public = false) {
 		elseif ( preg_match("/yfrog\.com/",$tweet->entities->urls[0]->display_url) ) {
 			$code = explode("/",$tweet->entities->urls[0]->display_url);
 			echo '<a onclick="loadIMG(\'yfrog\',\'http://yfrog.com/'.$code[1].':medium\');" data-toggle="modal" href="#mdl"><img src="http://yfrog.com/'.$code[1].':small" /></a><br />';
+		}
+		elseif ( preg_match("/instagr.am/",$tweet->entities->urls[0]->display_url) ) {
+			$code = explode("/p/",$tweet->entities->urls[0]->display_url);
+			$code = str_replace("/","",$code[1]);
+			echo '<a onclick="loadIMG(\'Instagram\',\'http://instagr.am/p/'.$code.'/media/?size=l\');" data-toggle="modal" href="#mdl"><img src="http://instagr.am/p/'.$code.'/media/?size=t" /></a><br />';
 		}
 		elseif ( preg_match("/youtube\.com\/watch/",$tweet->entities->urls[0]->expanded_url) ) {
 			$url = explode("v=",$tweet->entities->urls[0]->expanded_url);
@@ -85,7 +90,7 @@ function makeTable($tweets, $public = false) {
 		if ( $public ) echo '<span style="color: #999;" class="pull-right">'.date("d-m H:i:s O",strtotime($tweet->created_at)).'</span>';
 		else {
 			echo '<span class="twToolBox">
-				<a href="#top" onclick="reply(\''. $tweet->user->screen_name .'\',\''. $tweet->id .'\');"><img class="hoverClass" src="/lib/layout/img/icons/reply.png" alt="&raquo; Reply" /></a> ';
+				<a href="#" onclick="reply(\''. $tweet->user->screen_name .'\',\''. $tweet->id .'\');"><img class="hoverClass" src="/lib/layout/img/icons/reply.png" alt="&raquo; Reply" /></a> ';
 			if ( $tweet->retweeted == 1 || $tweet->retweeted_status->retweeted == 1 )
 				echo '<a onclick="post(\'/lib/twitter/index.php?call=statuses/destroy/'. $tweet->id .',\'\', \'postM\');"><img class="hoverClass" src="/lib/layout/img/icons/retweet_on.png" alt="Retweeted!" /></a> ';
 			else 
@@ -139,7 +144,7 @@ function linkify_tweet($twdata) {
         '\1<a href="#" onclick="post(\'/lib/twitter/index.php?call=users/lookup\',\'screen_name=\2\',\'span3\');">@\2</a>',
         $tweet);
 	$tweet = preg_replace('/(^|\s)#(\w+)/',
-        '\1<a href="http://search.twitter.com/search?q=%23\2">#\2</a>',
+        '\1<a href="#" onclick="ajax(\'/lib/twitter/index.php?call=search&q=\' + encodeURIComponent(\'#\2\') + \'&include_entities=true\', \'span3\');">#\2</a>',
         $tweet);
 	$tweet = wordwrap($tweet,40);
 	return $tweet;

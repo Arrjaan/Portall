@@ -130,6 +130,7 @@ abstract class BaseFacebook
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_TIMEOUT        => 60,
     CURLOPT_USERAGENT      => 'facebook-php-3.1',
+	CURLOPT_SSL_VERIFYPEER => false
   );
 
   /**
@@ -877,8 +878,8 @@ abstract class BaseFacebook
     if (curl_errno($ch) == 60) { // CURLE_SSL_CACERT
       self::errorLog('Invalid or no certificate authority found, '.
                      'using bundled information');
-      curl_setopt($ch, CURLOPT_CAINFO,
-                  dirname(__FILE__) . '/fb_ca_chain_bundle.crt');
+      //curl_setopt($ch, CURLOPT_CAINFO,
+      //            dirname(__FILE__) . '/fb_ca_chain_bundle.crt');
       $result = curl_exec($ch);
     }
 

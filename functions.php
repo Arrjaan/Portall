@@ -1,5 +1,9 @@
 <?php
 
+function closeBtn() {
+	return " <span class=\"close\"><a href=\"#\" onclick=\"ajax('/lib/twitter/index.php?call=account/verify_credentials','span3');\"><img src=\"/lib/layout/img/tw.png\"></a> <a href=\"#\" onclick=\"ajax('/lib/facebook/index.php?call=/".$_SESSION['facebook']."', 'span3');\"><img src=\"/lib/layout/img/fb.png\"></a></span></h2>";
+}
+
 function restoreLogin($data) {
 	if ( empty($_SESSION['limit']) ) $_SESSION['limit'] = '?';
 	$_SESSION['access_token'] = 
@@ -20,8 +24,8 @@ function restoreLogin($data) {
 function limitStatus() {
 	if ( $_SESSION['limit'] > 299 ) return "badge-success";
 	if ( $_SESSION['limit'] > 149 ) return "badge-info";
-	if ( $_SESSION['limit'] > 99 ) return "badge-warning";
-	if ( $_SESSION['limit'] < 51 ) return "badge-important";
+	if ( $_SESSION['limit'] > 50 ) return "badge-warning";
+	if ( $_SESSION['limit'] < 51 ) return "badge-error";
 }
 
 function timetostr($time) {

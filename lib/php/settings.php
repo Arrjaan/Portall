@@ -80,7 +80,7 @@ switch ($page[2]) {
 			<div class="well">
 				<strong>Example</strong><br />';
 			if ( $prefs['display_time'] == "relative" ) $content .= timetostr(time());
-			if ( $prefs['display_time'] == "absolute" ) $content .= date("d-m H:i:s O",time());
+			if ( $prefs['display_time'] == "absolute" ) $content .= date("d-m H:i:s O");
 			if ( $prefs['display_time'] !== "relative" && $prefs['display_time'] !== "absolute" ) $content .= date($prefs['display_time'],time());
 			$content .= '<br />
 			</div>

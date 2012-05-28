@@ -29,9 +29,12 @@ $q = $db->query("select * from `prefs` where `id` = '".$_SESSION['userid']."'");
 $prefs = $q->fetch_assoc();
 
 if ( !empty($prefs['timezone']) ) date_default_timezone_set($prefs['timezone']);
+else date_default_timezone_set('Europe/Amsterdam');
 
 @$page = explode("/",$_SERVER['PATH_INFO']);
 if ( empty($page[1]) ) $page[1] = "index";
+
+if ( $maintance && $page[1] !== "maintaince" ) header('Location: /maintaince');
 
 switch ( $page[1] ) {
 	case ( file_exists('lib/php/'.$page[1].'.php') ):

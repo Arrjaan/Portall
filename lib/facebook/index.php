@@ -85,7 +85,8 @@
 	if ( preg_match("/[0-9_]{10,40}\/comments/",$_REQUEST['call']) ) {	
 		$wall = $wall['data'];
 		
-		makeFBTable($wall, "Comments <a href=\"#\" onclick=\"reset();\" class=\"close\">&times;</a>", "Replies"); 
+		
+		makeFBTable($wall, "Comments".closeBtn(), "Replies"); 
 		
 		$post_id = str_replace("comments","",str_replace("/","",$_REQUEST['call']));
 		echo '<span class="input-append"><form onsubmit="return false;" class="form-inline"><input class="input" /><input type="button" value="Comment" onclick="fbComment(\''.$post_id.'\',this.form);" class="btn"></form></span>';			
@@ -96,7 +97,7 @@
 	elseif ( preg_match("/[0-9]{10,20}/",$_REQUEST['call']) ) {	
 		$data = json_decode(file_get_contents("https://graph.facebook.com/".$wall['id']."?access_token=".$facebook->getAccessToken()),true);
 		
-		echo "<h2>". $wall['name'] ." <a href=\"#\" onclick=\"reset();\" class=\"close\">&times;</a></h2>";
+		echo "<h2>". $wall['name'] . closeBtn();
 		echo '<table class="table"><tr><td><a onclick="loadIMG(\''.$data['name'].'\',\'http://graph.facebook.com/'.$wall['id'].'/picture?type=large\');" data-toggle="modal" href="#mdl"><img src="http://graph.facebook.com/'.$wall['id'].'/picture?type=normal" /></a></td><td>';
 		
 		echo  '<strong>'.$data['name'].'</strong><br />';
